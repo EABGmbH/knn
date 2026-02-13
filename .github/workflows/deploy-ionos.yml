@@ -18,14 +18,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Deploy via FTPS
+      - name: Deploy via SFTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.IONOS_FTP_SERVER }}
           username: ${{ secrets.IONOS_FTP_USERNAME }}
           password: ${{ secrets.IONOS_FTP_PASSWORD }}
-          protocol: ftp
-          port: 21
+          protocol: sftp
+          port: 22
           local-dir: ./
           server-dir: ${{ endsWith(secrets.IONOS_FTP_SERVER_DIR, '/') && secrets.IONOS_FTP_SERVER_DIR || format('{0}/', secrets.IONOS_FTP_SERVER_DIR) }}
           dangerous-clean-slate: false
