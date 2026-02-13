@@ -1339,11 +1339,9 @@
           const { jsPDF } = window.jspdf;
           const result = evaluate();
           const count = Math.max(1, Math.min(200, Number(wohneinheitenInput.value) || 1));
-          const term = Number(laufzeitSelect.value);
-          const grace = Number(tilgungsfreiSelect.value);
 
-          const monthlyKfw = calculateMonthlyRate(result.maxKreditsumme, KFW296_COMPARE_RATE, term, grace);
-          const monthlyMarket = calculateMonthlyRate(result.maxKreditsumme, MARKET_RATE, term, grace);
+          const monthlyKfw = calculateMonthlyInterestCost(result.maxKreditsumme, KFW296_COMPARE_RATE);
+          const monthlyMarket = calculateMonthlyInterestCost(result.maxKreditsumme, MARKET_RATE);
           const monthlySaving = Math.max(0, monthlyMarket - monthlyKfw);
           const yearlySaving = monthlySaving * 12;
 
@@ -1405,7 +1403,7 @@
           doc.setTextColor(17, 24, 39);
           doc.setFont("helvetica", "bold");
           doc.setFontSize(9.2);
-          doc.text("Monatliche Belastung:", 25, 151);
+          doc.text("Monatliche Zinsbelastung (ohne Tilgung):", 25, 151);
 
           addPdfKvLine(doc, 25, 186, 158, "Mit KfW-Förderung:", formatEuroWithCode(monthlyKfw));
           addPdfKvLine(doc, 25, 186, 165, "Bei Marktkonditionen:", formatEuroWithCode(monthlyMarket));
@@ -1413,7 +1411,7 @@
           doc.setFillColor(76, 104, 91);
           doc.rect(20, 170, 170, 10, "F");
           doc.setTextColor(255, 255, 255);
-          addPdfKvLine(doc, 25, 186, 176.8, "Monatliche Ersparnis:", formatEuroWithCode(monthlySaving), [255, 255, 255]);
+          addPdfKvLine(doc, 25, 186, 176.8, "Monatlicher Zinsvorteil:", formatEuroWithCode(monthlySaving), [255, 255, 255]);
 
           doc.setFillColor(76, 104, 91);
           doc.rect(15, 191, 180, 21, "F");
@@ -1440,7 +1438,7 @@
           doc.text("Hinweis zur Tilgung:", 15, 242.5);
           doc.setFont("helvetica", "normal");
           doc.text(
-            "Während der tilgungsfreien Jahre zahlen Sie nur Zinsen. Danach kommt die Tilgung hinzu.",
+            "Der Vergleich zeigt reine Zinskosten auf Basis der Darlehenssumme (ohne Tilgung).",
             15,
             247,
             { maxWidth: 180 },
@@ -1505,6 +1503,11 @@
         const n = amortizationYears * 12;
         if (monthlyRate === 0) return principal / n;
         return (principal * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -n));
+      }
+
+      function calculateMonthlyInterestCost(principal, annualRatePercent) {
+        const monthlyRate = annualRatePercent / 100 / 12;
+        return principal * monthlyRate;
       }
 
       function buildProgress() {
