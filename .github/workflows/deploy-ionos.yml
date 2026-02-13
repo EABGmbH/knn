@@ -24,7 +24,7 @@ jobs:
           server: ${{ secrets.IONOS_FTP_SERVER }}
           username: ${{ secrets.IONOS_FTP_USERNAME }}
           password: ${{ secrets.IONOS_FTP_PASSWORD }}
-          protocol: ftps
+          protocol: ftp
           port: 21
           local-dir: ./
           server-dir: ${{ endsWith(secrets.IONOS_FTP_SERVER_DIR, '/') && secrets.IONOS_FTP_SERVER_DIR || format('{0}/', secrets.IONOS_FTP_SERVER_DIR) }}
