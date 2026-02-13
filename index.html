@@ -1,0 +1,1958 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KfW-296 Förderrechner</title>
+    <style>
+      :root {
+        --bg: #3b5748;
+        --card: #ffffff;
+        --text: #333333;
+        --line: #e0e0e0;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: linear-gradient(180deg, #3b5748 0%, #345243 100%);
+        color: #ffffff;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 32px 20px;
+      }
+
+      h1 {
+        margin: 0;
+      }
+
+      .subtitle {
+        margin: 10px 0 0;
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.02rem;
+      }
+
+      .card {
+        margin-top: 22px;
+        background: var(--card);
+        color: var(--text);
+        border-radius: 16px;
+        box-shadow: 0 14px 36px rgba(19, 35, 29, 0.2);
+        padding: 26px;
+        border: 1px solid #dfe6eb;
+      }
+
+      h2 {
+        margin: 0 0 10px;
+        font-size: 1.18rem;
+        letter-spacing: 0.1px;
+      }
+
+      .progress {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 24px;
+        padding: 8px 2px 10px;
+      }
+
+      .progress-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 78px;
+      }
+
+      .progress-dot {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #e5e7eb;
+        color: #a3a3a3;
+        border: 2px solid #e5e7eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.95rem;
+        line-height: 1;
+        position: relative;
+        gap: 1px;
+      }
+
+      .progress-dot-number {
+        display: inline-block;
+        line-height: 1;
+      }
+
+      .progress-label {
+        margin-top: 7px;
+        font-size: 0.77rem;
+        color: #334155;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      .progress-step.active .progress-dot {
+        background: #556b5f;
+        color: #fff;
+        border-color: #556b5f;
+      }
+
+      .progress-step.completed .progress-dot {
+        background: #5ab552;
+        color: #fff;
+        border-color: #5ab552;
+      }
+
+      .progress-step:not(.active):not(.completed) .progress-label {
+        color: #94a3b8;
+        font-weight: 600;
+      }
+
+      .progress-line {
+        width: 42px;
+        height: 2px;
+        background: #d1d5db;
+        margin: 0 8px 21px;
+      }
+
+      .progress-dot-check {
+        color: #ffffff;
+        font-size: 0.72rem;
+        font-weight: 800;
+        line-height: 1;
+        margin-left: -1px;
+      }
+
+      .step {
+        display: none;
+      }
+
+      .step.active {
+        display: block;
+      }
+
+      .step {
+        min-height: 0;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .full {
+        grid-column: 1 / -1;
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+      }
+
+      .field label {
+        font-size: 0.93rem;
+        font-weight: 600;
+        line-height: 1.3;
+      }
+
+      input,
+      select {
+        width: 100%;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        padding: 10px 11px;
+        font-size: 0.95rem;
+        min-height: 42px;
+        background: #fff;
+        color: #222;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      input:focus,
+      select:focus {
+        outline: none;
+        border-color: #3b5748;
+        box-shadow: 0 0 0 3px rgba(59, 87, 72, 0.12);
+      }
+
+      .hint {
+        margin: 0;
+        color: #52525b;
+        font-size: 0.92rem;
+        line-height: 1.45;
+      }
+
+      .step-intro {
+        margin-bottom: 14px;
+      }
+
+      #step-3 .grid {
+        column-gap: 18px;
+        row-gap: 18px;
+      }
+
+      #step-3 .field label {
+        font-size: 0.9rem;
+        font-weight: 700;
+        letter-spacing: 0.1px;
+        color: #1f2937;
+        min-height: 48px;
+        display: flex;
+        align-items: flex-end;
+      }
+
+      .hint-important {
+        margin-top: 16px;
+        padding: 9px 12px 9px 15px;
+        border-radius: 10px;
+        background: #e9ebed;
+        color: #1f2937;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hint-important::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: #3b5748;
+        border-radius: 10px 0 0 10px;
+      }
+
+      .hint-important strong {
+        font-weight: 800;
+      }
+
+      .check {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 12px 0;
+        font-size: 0.95rem;
+        border: 1px solid #eceff3;
+        border-radius: 10px;
+        background: #fafbfc;
+        padding: 10px 12px;
+      }
+
+      .check input {
+        width: auto;
+      }
+
+      .check.good {
+        justify-content: center;
+        border: 1px solid #86efac;
+        background: #f0fdf4;
+        border-radius: 8px;
+        padding: 8px;
+      }
+
+      input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        accent-color: #3b5748;
+      }
+
+      .alert-red {
+        margin-top: 12px;
+        border-radius: 8px;
+        background: #fee2e2;
+        color: #b91c1c;
+        padding: 10px;
+        font-size: 0.9rem;
+      }
+
+      .list {
+        margin: 0;
+        padding-left: 20px;
+        color: #52525b;
+        font-size: 0.92rem;
+        line-height: 1.45;
+      }
+
+      .rule-list {
+        margin-top: 12px;
+        margin-bottom: 14px;
+      }
+
+      .rule-list li {
+        margin: 7px 0;
+      }
+
+      .room-hint-dropdown {
+        margin-top: 14px;
+        background: #f1f7f3;
+        border: 1px solid #b7dec6;
+        border-radius: 8px;
+        padding: 12px;
+        line-height: 1.55;
+      }
+
+      .room-hint-dropdown summary {
+        cursor: pointer;
+        font-weight: 700;
+        line-height: 1.35;
+        color: #1f2937;
+        background: #e3f0e8;
+        border: 1px solid #b7dec6;
+        border-radius: 6px;
+        padding: 8px 10px;
+      }
+
+      .room-hint-dropdown[open] summary {
+        margin-bottom: 10px;
+      }
+
+      #step-4 .table-wrap {
+        margin-top: 14px;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        border: 1px solid #e2e8ee;
+        border-radius: 12px;
+        background: #ffffff;
+      }
+
+      .result-panel {
+        margin-top: 14px;
+        border: 1px solid #d7dfda;
+        border-radius: 10px;
+        background: #e9eeea;
+        padding: 14px 16px;
+      }
+
+      .overview-panel {
+        margin-top: 14px;
+        border: 1px solid #d7dfda;
+        border-left: 3px solid #537563;
+        border-radius: 8px;
+        background: #e9eeea;
+        padding: 12px 14px;
+      }
+
+      .overview-title {
+        margin: 0;
+        padding-bottom: 9px;
+        border-bottom: 1px solid #d3dcd7;
+        color: #2f4e3d;
+        font-size: 1.02rem;
+        font-weight: 600;
+      }
+
+      .overview-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid #d7dfda;
+        color: #334155;
+        font-size: 0.97rem;
+      }
+
+      .overview-row:last-child {
+        border-bottom: 0;
+      }
+
+      .overview-value {
+        color: #2f4e3d;
+        font-weight: 600;
+      }
+
+      .result-panel-title {
+        margin: 0;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #d5ddd8;
+        color: #2f4e3d;
+        font-size: 1.14rem;
+        font-weight: 600;
+        line-height: 1.25;
+      }
+
+      .result-kv {
+        margin-top: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        color: #1f2937;
+      }
+
+      .result-kv strong {
+        color: #2f4e3d;
+        font-size: 1.05rem;
+      }
+
+      .result-note {
+        margin-top: 8px;
+      }
+
+      .kfw-rate-panel {
+        margin-top: 14px;
+      }
+
+      .kfw-intro {
+        margin: 12px 0 14px;
+        color: #374151;
+        font-size: 0.93rem;
+        line-height: 1.45;
+      }
+
+      .kfw-rate-table-wrap {
+        overflow-x: auto;
+        background: #fff;
+        border: 1px solid #d8e0db;
+        border-radius: 8px;
+      }
+
+      .kfw-rate-table {
+        width: 100%;
+        min-width: 680px;
+        border-collapse: collapse;
+      }
+
+      .kfw-rate-table thead th {
+        background: #4f6a5a;
+        color: #ffffff;
+        border-bottom: 0;
+        padding: 10px 12px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        text-align: center;
+      }
+
+      .kfw-rate-table tbody td {
+        padding: 10px 12px;
+        border-top: 1px solid #e3e8e4;
+        text-align: center;
+      }
+
+      .kfw-rate-table tbody tr:nth-child(odd) {
+        background: #ffffff;
+      }
+
+      .kfw-rate-table tbody tr:nth-child(even) {
+        background: #f8faf9;
+      }
+
+      .kfw-stand {
+        margin-top: 10px;
+        text-align: center;
+        color: #5b6470;
+        font-size: 0.82rem;
+      }
+
+      .zinsvergleich-panel {
+        margin-top: 14px;
+        border: 1px solid #557564;
+        border-radius: 8px;
+        background: #e9eeea;
+        padding: 14px 16px;
+      }
+
+      .zinsvergleich-title {
+        margin: 0;
+        color: #2f4e3d;
+        font-size: 1.14rem;
+        font-weight: 600;
+      }
+
+      .zinsvergleich-sub {
+        margin: 10px 0 0;
+        padding-top: 10px;
+        border-top: 1px solid #d5ddd8;
+        color: #4b5563;
+        font-size: 0.88rem;
+      }
+
+      .zinsvergleich-grid {
+        margin-top: 12px;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .zins-box {
+        border: 1px solid #d9e1db;
+        border-radius: 10px;
+        background: #ffffff;
+        padding: 14px;
+        text-align: center;
+      }
+
+      .zins-box-label {
+        color: #5b6470;
+        font-size: 0.88rem;
+        font-weight: 600;
+      }
+
+      .zins-box-rate {
+        margin-top: 8px;
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1;
+      }
+
+      .zins-box-rate.kfw {
+        color: #2f4e3d;
+      }
+
+      .zins-box-rate.market {
+        color: #dc2626;
+      }
+
+      .zins-box-note {
+        margin-top: 4px;
+        color: #4b5563;
+        font-size: 0.84rem;
+      }
+
+      .zins-vorteil {
+        margin-top: 12px;
+        border: 1px solid #b8e0c6;
+        border-radius: 8px;
+        background: #dff3e5;
+        padding: 12px;
+      }
+
+      .zins-vorteil-title {
+        margin: 0;
+        color: #14532d;
+        font-size: 1.06rem;
+        font-weight: 700;
+      }
+
+      .zins-vorteil-sub {
+        margin: 4px 0 0;
+        color: #1f2937;
+        font-size: 0.9rem;
+      }
+
+      .zinsquelle {
+        margin-top: 10px;
+        text-align: center;
+        color: #5b6470;
+        font-size: 0.8rem;
+      }
+
+      .cta-grid {
+        margin-top: 14px;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .cta-card {
+        border: 1px solid #d3dbe4;
+        border-radius: 10px;
+        background: #eceff3;
+        padding: 16px;
+        text-align: center;
+      }
+
+      .cta-card.green {
+        border-color: #4ea66a;
+        background: #dff3e5;
+      }
+
+      .cta-icon {
+        font-size: 1.5rem;
+      }
+
+      .cta-text {
+        margin: 8px 0 12px;
+        color: #1f2937;
+        font-size: 0.95rem;
+        line-height: 1.4;
+      }
+
+      .cta-button {
+        width: 100%;
+        display: inline-block;
+        border: 0;
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 0.97rem;
+        font-weight: 700;
+        color: #ffffff;
+        background: #6b7280;
+        text-decoration: none;
+        text-align: center;
+      }
+
+      .cta-card.green .cta-button {
+        background: #16a34a;
+      }
+
+      .kfw-controls {
+        margin-top: 12px;
+        display: none;
+      }
+
+      #step-5 .kfw-controls {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      table {
+        width: 100%;
+        min-width: 680px;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 10px;
+        border-top: 1px solid #eceff3;
+        text-align: left;
+        font-size: 0.9rem;
+      }
+
+      thead th {
+        border-top: 0;
+        background: #f3f7fb;
+      }
+
+      .status-ok {
+        color: #15803d;
+      }
+
+      .status-bad {
+        color: #b91c1c;
+      }
+
+      .badge {
+        display: inline-flex;
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-size: 0.9rem;
+        font-weight: 700;
+      }
+
+      .step5-head {
+        display: inline-block;
+      }
+
+      .status-details {
+        margin-top: 10px;
+        border: 1px solid #d6e0ea;
+        border-radius: 10px;
+        background: #f6f9fc;
+        padding: 10px 12px;
+      }
+
+      .status-details summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        color: #1f2937;
+        list-style: none;
+        background: #ffffff;
+        border: 1px solid #d6e0ea;
+        border-radius: 8px;
+        padding: 8px 10px;
+      }
+
+      .status-details summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .status-details-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .status-details-hint {
+        font-size: 0.82rem;
+        color: #64748b;
+        font-weight: 500;
+      }
+
+      .status-details-arrow {
+        font-size: 0.85rem;
+        color: #475569;
+        transition: transform 0.2s ease;
+      }
+
+      .status-details[open] summary {
+        margin-bottom: 8px;
+      }
+
+      .status-details[open] .status-details-arrow {
+        transform: rotate(180deg);
+      }
+
+      #step-5 #resultBadge {
+        display: flex;
+        width: 100%;
+        justify-content: center;
+        font-size: 0.96rem;
+        font-weight: 600;
+        line-height: 1.3;
+        letter-spacing: 0.1px;
+      }
+
+      .badge.geeignet {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .badge.nicht_geeignet {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .badge.unklar {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
+      .box {
+        margin-top: 14px;
+        border: 1px solid #e2e8ee;
+        border-radius: 12px;
+        background: #fbfdff;
+        padding: 14px;
+      }
+
+      .issues {
+        margin: 8px 0 0;
+        padding-left: 18px;
+      }
+
+      .issues li {
+        margin: 8px 0;
+        border-radius: 10px;
+        background: #ffffff;
+        border: 1px solid #e8edf2;
+        border-left: 4px solid #d4dee8;
+        padding: 10px;
+        list-style: none;
+        line-height: 1.45;
+      }
+
+      .muted {
+        color: #52525b;
+        font-size: 0.86rem;
+        line-height: 1.45;
+      }
+
+      .error {
+        margin-top: 14px;
+        border-radius: 8px;
+        background: #fee2e2;
+        color: #b91c1c;
+        padding: 10px;
+        font-size: 0.9rem;
+        display: none;
+      }
+
+      .actions {
+        margin-top: 14px;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      button {
+        border-radius: 8px;
+        padding: 10px 16px;
+        font-size: 0.96rem;
+        font-weight: 600;
+        min-height: 42px;
+        cursor: pointer;
+      }
+
+      .btn-prev {
+        border: 1px solid #dcdcdc;
+        background: linear-gradient(180deg, #fafafa 0%, #f1f1f1 100%);
+        color: #333;
+      }
+
+      .btn-prev:hover {
+        background: linear-gradient(180deg, #ffffff 0%, #f2f4f7 100%);
+      }
+
+      .btn-next {
+        border: 0;
+        background: linear-gradient(180deg, #476755 0%, #3b5748 100%);
+        color: #fff;
+        box-shadow: 0 4px 10px rgba(59, 87, 72, 0.25);
+      }
+
+      #step-5 .box {
+        margin-top: 16px;
+      }
+
+      .btn-next:hover {
+        background: #2d4136;
+      }
+
+      .btn-prev:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      @media (max-width: 768px) {
+        .wrap {
+          padding: 20px 12px;
+        }
+
+        .card {
+          padding: 16px;
+        }
+
+        .progress {
+          overflow-x: auto;
+          justify-content: flex-start;
+        }
+
+        .progress-line {
+          width: 24px;
+        }
+
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        .actions {
+          gap: 8px;
+        }
+
+        .zinsvergleich-grid,
+        .cta-grid {
+          grid-template-columns: 1fr;
+        }
+
+        #step-3 .field label {
+          min-height: 0;
+          display: block;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <section class="card">
+        <div id="progress" class="progress"></div>
+
+        <div id="step-1" class="step active">
+          <div class="grid">
+            <div class="field">
+              <label for="projektart">Projektart</label>
+              <select id="projektart">
+                <option value="">Bitte wählen</option>
+                <option value="neubau">Neubau</option>
+                <option value="erstkauf">Erstkauf</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="wohneinheiten">Anzahl Wohneinheiten</label>
+              <input id="wohneinheiten" type="number" min="1" max="200" value="1" />
+            </div>
+
+            <div class="field full">
+              <label for="plz">Objektstandort (PLZ)</label>
+              <input id="plz" type="text" placeholder="z. B. 50667" />
+            </div>
+          </div>
+        </div>
+
+        <div id="step-2" class="step">
+          <h2>K.O.-Kriterien (Ausschluss)</h2>
+          <p class="hint hint-important">
+            <strong>Wichtig:</strong> Wenn hier auch nur ein Punkt auf Ihr Vorhaben zutrifft, ist KfW 296 aktuell
+            nicht passend.
+          </p>
+
+          <label class="check"><input id="begonnen" type="checkbox" />Vorhaben bereits begonnen?</label>
+          <label class="check"
+            ><input id="umschuldung" type="checkbox" />Umschuldung, Nachfinanzierung oder Grundstückskauf?</label
+          >
+          <label class="check"
+            ><input id="parallel" type="checkbox" />Parallelförderung BEG oder KfW 297/298/299/300 für dieselbe Wohneinheit?</label
+          >
+          <label class="check good"
+            ><input id="noneApplies" type="checkbox" />Nichts davon trifft zu.</label
+          >
+
+          <p id="koEarly" class="alert-red" style="display: none">
+            Aktuell nicht geeignet. Was muss ich ändern? Bitte K.O.-Punkte entfernen (z. B. Antrag vor Beginn,
+            keine Umschuldung, keine unzulässige Parallelförderung).
+          </p>
+        </div>
+
+        <div id="step-3" class="step">
+          <h2>Technische Voraussetzungen</h2>
+          <p class="hint step-intro">
+            Falls Ihnen etwas unklar ist, wählen Sie einfach „Unklar". Das Ergebnis zeigt dann, was noch geprüft
+            werden muss.
+          </p>
+
+          <div class="grid">
+            <div class="field">
+              <label for="eh55">Effizienzhaus 55 erreicht?</label>
+              <select id="eh55">
+                <option value="ja">Ja</option>
+                <option value="nein">Nein</option>
+                <option value="unklar">Unklar</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="waermeerzeuger">Wärmeerzeuger</label>
+              <select id="waermeerzeuger">
+                <option value="">Bitte wählen</option>
+                <option value="waermepumpe">Wärmepumpe</option>
+                <option value="fernwaerme">Fernwärme</option>
+                <option value="solarthermie">Solarthermie</option>
+                <option value="stromdirekt">Stromdirekt</option>
+                <option value="fossil">Fossil</option>
+                <option value="biomasse">Biomasse</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="lca">Klimabilanz (Grenzwert max. 24) bestätigt?</label>
+              <select id="lca">
+                <option value="ja">Ja</option>
+                <option value="nein">Nein</option>
+                <option value="unklar" selected>Unklar</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="lcc">Lebenszyklus-Kosten mit KNN-Tool bestätigt?</label>
+              <select id="lcc">
+                <option value="ja">Ja</option>
+                <option value="nein">Nein</option>
+                <option value="unklar" selected>Unklar</option>
+              </select>
+            </div>
+          </div>
+
+          <p class="hint hint-important">
+            <strong>Hinweis:</strong><br />Die beiden Nachweise zu Klimawirkung und Lebenszyklus-Kosten kommen in der
+            Regel vom
+            Energieberater bzw. Planungsteam.
+          </p>
+
+          <p id="heaterKo" class="alert-red" style="display: none">
+            Nicht geeignet. Was muss ich ändern? Bitte auf zulässigen Wärmeerzeuger umstellen (z. B. Wärmepumpe,
+            Fernwärme).
+          </p>
+
+          <p id="eh55Ko" class="alert-red" style="display: none">
+            Nicht geeignet. Was muss ich ändern? Bitte Effizienzhaus-55-Standard nachweisen bzw. Planung auf EH55
+            anpassen.
+          </p>
+        </div>
+
+        <div id="step-4" class="step">
+          <h2>Wohnflächen-/Raum-Check je Wohneinheit</h2>
+          <p class="hint" style="margin: 0 0 10px">
+            Die Anzahl der Aufenthalts­räume ergibt sich aus der Wohn­fläche Ihrer Immobilie.
+          </p>
+          <ul class="list rule-list">
+            <li><strong>1 Raum:</strong> bis 40 m² (Standard), bis 55 m² (rollstuhlgerecht)</li>
+            <li><strong>2 Räume:</strong> bis 55 m² (Standard), bis 70 m² (rollstuhlgerecht)</li>
+            <li><strong>3 Räume:</strong> bis 70 m² (Standard), bis 85 m² (rollstuhlgerecht)</li>
+            <li><strong>4 Räume:</strong> bis 85 m² (Standard), bis 100 m² (rollstuhlgerecht)</li>
+            <li><strong>Je 1 weiterer Raum:</strong> bis zusätzlich 15 m² (Standard und rollstuhlgerecht)</li>
+          </ul>
+
+          <details class="hint room-hint-dropdown">
+            <summary>Was zählt als Aufenthaltsraum?</summary>
+            Ein Aufenthaltsraum ist ein Raum ab 10 m², der als Wohn- und Rückzugsraum für maximal 2 Personen dient.
+            Dazu zählt ein abgeschlossener Wohnraum innerhalb einer Wohneinheit, der nach der jeweiligen
+            Landesbauordnung als Aufenthaltsraum gilt. Wohnküchen/Küchen gelten ebenfalls als Aufenthaltsraum,
+            während Sanitärräume nicht dazu zählen.
+          </details>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>WE</th>
+                  <th>Wohnfläche (m²)</th>
+                  <th>Aufenthaltsräume</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="unitRows"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="step-5" class="step">
+          <div class="step5-head">
+            <h2>Ergebnis & Kredit-Indikation</h2>
+            <div id="resultBadge" class="badge unklar">Gesamtstatus: unklar</div>
+          </div>
+
+          <details class="status-details">
+            <summary>
+              <span class="status-details-label">Prüfdetails</span>
+              <span class="status-details-hint">Anzeigen <span class="status-details-arrow">▼</span></span>
+            </summary>
+            <ul id="issues" class="issues"></ul>
+          </details>
+
+          <div class="result-panel">
+            <div class="result-kv">
+              <span>Maximale Kreditsumme</span>
+              <strong id="maxSum">0 €</strong>
+            </div>
+          </div>
+
+          <div class="overview-panel">
+            <h3 class="overview-title">Ihre Angaben im Überblick</h3>
+            <div class="overview-row">
+              <span>Projektart</span>
+              <span id="overviewProjektart" class="overview-value">-</span>
+            </div>
+            <div class="overview-row">
+              <span>Anzahl Wohneinheiten</span>
+              <span id="overviewWohneinheiten" class="overview-value">-</span>
+            </div>
+            <div class="overview-row">
+              <span>Objektstandort (PLZ)</span>
+              <span id="overviewPlz" class="overview-value">-</span>
+            </div>
+            <div class="overview-row">
+              <span>Effizienzhaus 55</span>
+              <span id="overviewEh55" class="overview-value">-</span>
+            </div>
+            <div class="overview-row">
+              <span>Wärmeerzeuger</span>
+              <span id="overviewWaerme" class="overview-value">-</span>
+            </div>
+          </div>
+
+          <div class="result-panel kfw-rate-panel">
+            <h3 class="result-panel-title">Kreditkonditionen - Annuitätendarlehen</h3>
+            <div class="kfw-rate-table-wrap">
+              <table class="kfw-rate-table">
+                <thead>
+                  <tr>
+                    <th>Laufzeit</th>
+                    <th>Zinsbindung</th>
+                    <th>Tilgungsfreie Anlaufzeit</th>
+                    <th>Sollzins pro Jahr</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr data-term-row="10">
+                    <td>4 bis 10 Jahre</td>
+                    <td>10 Jahre</td>
+                    <td>0 bis 2 Jahre</td>
+                    <td id="rate-cell-10">-</td>
+                  </tr>
+                  <tr data-term-row="25">
+                    <td>11 bis 25 Jahre</td>
+                    <td>10 Jahre</td>
+                    <td>1 bis 3 Jahre</td>
+                    <td id="rate-cell-25">-</td>
+                  </tr>
+                  <tr data-term-row="35">
+                    <td>26 bis 35 Jahre</td>
+                    <td>10 Jahre</td>
+                    <td>1 bis 5 Jahre</td>
+                    <td id="rate-cell-35">-</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div id="kfwStand" class="kfw-stand">Stand: Februar 2026</div>
+          </div>
+
+          <div class="zinsvergleich-panel">
+            <h3 class="zinsvergleich-title">💰 Zinsvergleich: KfW 296 vs. klassische Baufinanzierung</h3>
+            <p class="zinsvergleich-sub">
+              Vergleich mit marktüblichen Zinssätzen (4-10 Jahre Laufzeit, 10 Jahre Zinsbindung, Beleihung &lt; 90%)
+            </p>
+
+            <div class="zinsvergleich-grid">
+              <div class="zins-box">
+                <div class="zins-box-label">🏛️ KfW 296</div>
+                <div id="compareKfwRate" class="zins-box-rate kfw">0,00 %</div>
+                <div class="zins-box-note">Sollzins p.a.</div>
+              </div>
+              <div class="zins-box">
+                <div class="zins-box-label">🏦 Interhyp (Markt)</div>
+                <div id="compareMarketRate" class="zins-box-rate market">3,96 %</div>
+                <div class="zins-box-note">Durchschnitt</div>
+              </div>
+            </div>
+
+            <div class="zins-vorteil">
+              <p id="compareAdvantage" class="zins-vorteil-title">Ihr Vorteil: 0,00 % günstigerer Zins!</p>
+              <p id="compareSaving" class="zins-vorteil-sub">Bei 0 € Darlehenssumme sparen Sie über die Laufzeit mehrere Tausend Euro an Zinsen.</p>
+            </div>
+
+            <p id="zinsStand" class="zinsquelle">Stand: Februar 2026</p>
+          </div>
+
+          <div class="cta-grid">
+            <div class="cta-card">
+              <div class="cta-icon">📄</div>
+              <p class="cta-text">Jetzt kostenlos PDF anfordern – inklusive wichtiger Hinweise zur erfolgreichen Umsetzung</p>
+              <button id="createPdfBtn" class="cta-button" type="button">Kostenloses PDF erstellen</button>
+            </div>
+            <div class="cta-card green">
+              <div class="cta-icon">🔥</div>
+              <p class="cta-text">Jetzt Energieberatung anfragen und direkt 10 % Nachlass sichern.</p>
+              <a
+                class="cta-button"
+                href="https://energy-advice-bavaria.de/kontakt/?tab=offer-tab-pane#section-79"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Unverbindliches Angebot anfordern</a
+              >
+            </div>
+          </div>
+
+          <div class="grid kfw-controls">
+            <div class="field">
+              <label for="laufzeit">Gewählte Laufzeit</label>
+              <select id="laufzeit">
+                <option value="10">10 Jahre</option>
+                <option value="25">25 Jahre</option>
+                <option value="35">35 Jahre</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="tilgungsfrei">Tilgungsfreie Jahre</label>
+              <select id="tilgungsfrei"></select>
+            </div>
+
+            <div class="field">
+              <label for="zinssatz">Zinssatz (%)</label>
+              <input id="zinssatz" type="number" min="0" step="0.01" />
+            </div>
+          </div>
+
+          <div class="muted" style="margin-top: 8px">
+            Dieses Ergebnis ist eine Vorab-Indikation und ersetzt keine verbindliche Förderzusage.
+          </div>
+        </div>
+
+        <p id="stepError" class="error"></p>
+
+        <div class="actions">
+          <button id="backBtn" class="btn-prev" type="button">Zurück</button>
+          <button id="nextBtn" class="btn-next" type="button">Weiter</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+      const TOTAL_STEPS = 5;
+      const STEP_LABELS = ["Projekt", "K.O.", "Technik", "Fläche", "Ergebnis"];
+      const KREDIT_PRO_WE = 100000;
+      const DEFAULT_RATES = {
+        byTerm: { 10: 0.01, 25: 0.61, 35: 0.86 },
+        kfw296CompareRate: 0.01,
+        marketRate: 3.96,
+        stand: "Februar 2026",
+      };
+
+      let RATE_BY_TERM = { ...DEFAULT_RATES.byTerm };
+      let KFW296_COMPARE_RATE = DEFAULT_RATES.kfw296CompareRate;
+      let MARKET_RATE = DEFAULT_RATES.marketRate;
+      let CURRENT_STAND = DEFAULT_RATES.stand;
+
+      const state = {
+        step: 1,
+      };
+
+      const progress = document.getElementById("progress");
+      const stepError = document.getElementById("stepError");
+      const backBtn = document.getElementById("backBtn");
+      const nextBtn = document.getElementById("nextBtn");
+      const projektartSelect = document.getElementById("projektart");
+      const plzInput = document.getElementById("plz");
+      const eh55Select = document.getElementById("eh55");
+      const wohneinheitenInput = document.getElementById("wohneinheiten");
+      const noneApplies = document.getElementById("noneApplies");
+      const begonnen = document.getElementById("begonnen");
+      const umschuldung = document.getElementById("umschuldung");
+      const parallel = document.getElementById("parallel");
+      const heater = document.getElementById("waermeerzeuger");
+      const laufzeitSelect = document.getElementById("laufzeit");
+      const tilgungsfreiSelect = document.getElementById("tilgungsfrei");
+      const zinssatzInput = document.getElementById("zinssatz");
+      const createPdfBtn = document.getElementById("createPdfBtn");
+
+      function formatPercent(value) {
+        return `${Number(value).toFixed(2).replace(".", ",")} %`;
+      }
+
+      function syncKfwRateTable() {
+        [10, 25, 35].forEach((term) => {
+          const rateCell = document.getElementById(`rate-cell-${term}`);
+          if (rateCell) rateCell.textContent = formatPercent(RATE_BY_TERM[term]);
+        });
+      }
+
+      function formatEuro(value) {
+        return new Intl.NumberFormat("de-DE", {
+          style: "currency",
+          currency: "EUR",
+          maximumFractionDigits: 0,
+        }).format(value);
+      }
+
+      function formatEuroWithCode(value) {
+        return `${new Intl.NumberFormat("de-DE", { maximumFractionDigits: 0 }).format(value)} EUR`;
+      }
+
+      function formatTwoDecimals(value) {
+        return Number(value).toFixed(2).replace(".", ",");
+      }
+
+      function addPdfKvLine(doc, leftX, rightX, y, label, value, color = [17, 24, 39]) {
+        doc.setTextColor(...color);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9.2);
+        doc.text(label, leftX, y);
+        doc.setFont("helvetica", "bold");
+        doc.text(value, rightX, y, { align: "right" });
+      }
+
+      function drawPdfHeader(doc, logo, title) {
+        doc.setFillColor(76, 104, 91);
+        doc.rect(0, 0, 210, 22, "F");
+
+        const logoBoxX = 178;
+        const logoBoxY = 4.5;
+        const logoBoxW = 22;
+        const logoBoxH = 13;
+        const logoProps = doc.getImageProperties(logo);
+        const logoRatio = logoProps.width / logoProps.height;
+        const logoBoxRatio = logoBoxW / logoBoxH;
+
+        let drawLogoW = logoBoxW;
+        let drawLogoH = logoBoxH;
+
+        if (logoRatio > logoBoxRatio) {
+          drawLogoH = logoBoxW / logoRatio;
+        } else {
+          drawLogoW = logoBoxH * logoRatio;
+        }
+
+        const drawLogoX = logoBoxX + (logoBoxW - drawLogoW) / 2;
+        const drawLogoY = logoBoxY + (logoBoxH - drawLogoH) / 2;
+        doc.addImage(logo, "PNG", drawLogoX, drawLogoY, drawLogoW, drawLogoH);
+
+        doc.setTextColor(255, 255, 255);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9.5);
+        doc.text(title, 10, 13.5);
+      }
+
+      function applyStandText() {
+        const standText = `Stand: ${CURRENT_STAND}`;
+        const kfwStand = document.getElementById("kfwStand");
+        const zinsStand = document.getElementById("zinsStand");
+        if (kfwStand) kfwStand.textContent = standText;
+        if (zinsStand) zinsStand.textContent = standText;
+      }
+
+      function setRatesFromPayload(payload) {
+        const byTerm = payload?.rates?.byTerm || payload?.byTerm;
+        const r10 = Number(byTerm?.[10] ?? byTerm?.["10"]);
+        const r25 = Number(byTerm?.[25] ?? byTerm?.["25"]);
+        const r35 = Number(byTerm?.[35] ?? byTerm?.["35"]);
+        const kfwCompare = Number(payload?.rates?.kfw296CompareRate ?? payload?.kfw296CompareRate);
+        const market = Number(payload?.rates?.marketRate ?? payload?.marketRate);
+
+        if ([r10, r25, r35, kfwCompare, market].some((value) => !Number.isFinite(value))) {
+          return false;
+        }
+
+        RATE_BY_TERM = { 10: r10, 25: r25, 35: r35 };
+        KFW296_COMPARE_RATE = kfwCompare;
+        MARKET_RATE = market;
+        CURRENT_STAND = payload?.displayStand || payload?.stand || CURRENT_STAND;
+        applyStandText();
+        return true;
+      }
+
+      async function loadRates() {
+        try {
+          const response = await fetch("./rates.json", { cache: "no-store" });
+          if (!response.ok) {
+            applyStandText();
+            return;
+          }
+          const payload = await response.json();
+          const applied = setRatesFromPayload(payload);
+          if (!applied) applyStandText();
+        } catch (error) {
+          applyStandText();
+          console.warn("Raten konnten nicht geladen werden, es werden Standardwerte verwendet.", error);
+        }
+      }
+
+      async function loadImageAsDataUrl(path) {
+        const response = await fetch(path);
+        if (!response.ok) {
+          throw new Error(`Bild konnte nicht geladen werden: ${path}`);
+        }
+        const blob = await response.blob();
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.onerror = () => reject(new Error(`Bild konnte nicht verarbeitet werden: ${path}`));
+          reader.readAsDataURL(blob);
+        });
+      }
+
+      async function createResultPdf() {
+        try {
+          if (!window.jspdf?.jsPDF) {
+            alert("PDF-Bibliothek konnte nicht geladen werden.");
+            return;
+          }
+
+          const { jsPDF } = window.jspdf;
+          const result = evaluate();
+          const count = Math.max(1, Math.min(200, Number(wohneinheitenInput.value) || 1));
+          const term = Number(laufzeitSelect.value);
+          const grace = Number(tilgungsfreiSelect.value);
+
+          const monthlyKfw = calculateMonthlyRate(result.maxKreditsumme, KFW296_COMPARE_RATE, term, grace);
+          const monthlyMarket = calculateMonthlyRate(result.maxKreditsumme, MARKET_RATE, term, grace);
+          const monthlySaving = Math.max(0, monthlyMarket - monthlyKfw);
+          const yearlySaving = monthlySaving * 12;
+
+          const [titlePage, logo, qr, kfwAblauf] = await Promise.all([
+            loadImageAsDataUrl("titelblatt.png"),
+            loadImageAsDataUrl("logo.png"),
+            loadImageAsDataUrl("homepagestatistik.png"),
+            loadImageAsDataUrl("kfwablauf.png"),
+          ]);
+
+          const doc = new jsPDF({ unit: "mm", format: "a4", compress: true });
+
+          doc.addImage(titlePage, "PNG", 0, 0, 210, 297);
+          doc.addPage();
+
+          drawPdfHeader(doc, logo, "KfW - 296 KNN im Niedrigpreissegment - Ergebis");
+
+          doc.setTextColor(17, 24, 39);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(10.2);
+          doc.text("Projektdaten:", 20, 34);
+
+          const projektartLabel = getSelectedLabel(projektartSelect);
+          const eh55Label = getSelectedLabel(eh55Select);
+          const heaterLabel = getSelectedLabel(heater);
+
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(8.8);
+          doc.text(`Projektart: ${projektartLabel}`, 20, 42);
+          doc.text(`Anzahl Wohneinheiten: ${count}`, 20, 48);
+          doc.text(`Objektstandort (PLZ): ${plzInput.value.trim() || "-"}`, 20, 54);
+          doc.text(`EH55-Status: ${eh55Label}`, 20, 60);
+          doc.text(`Wärmeerzeuger: ${heaterLabel}`, 20, 66);
+          doc.text(`Kredithöhe: ${formatEuroWithCode(result.maxKreditsumme)}`, 20, 72);
+
+          doc.setDrawColor(190, 198, 203);
+          doc.setFillColor(247, 248, 250);
+          doc.rect(15, 82, 180, 103, "FD");
+
+          doc.setTextColor(17, 24, 39);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(11);
+          doc.text("Finanzierungsübersicht", 20, 92);
+
+          addPdfKvLine(doc, 25, 186, 102, "Kreditbetrag:", formatEuroWithCode(result.maxKreditsumme));
+          addPdfKvLine(doc, 25, 186, 109, "Max. möglicher KfW-Kredit:", formatEuroWithCode(result.maxKreditsumme));
+
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(9.2);
+          doc.text("Zinssätze (10 Jahre Zinsbindung):", 25, 120);
+          doc.setTextColor(185, 28, 28);
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(7.5);
+          doc.text("Hinweis: Längere Laufzeiten (11-35 Jahre) haben höhere KfW-Zinssätze.", 25, 126);
+
+          addPdfKvLine(doc, 25, 186, 133, "KfW-Förderkredit EH40:", `${formatTwoDecimals(KFW296_COMPARE_RATE)} % p.a.`);
+          addPdfKvLine(doc, 25, 186, 140, "Marktüblicher Zins:", `${formatTwoDecimals(MARKET_RATE)} % p.a.`);
+
+          doc.setTextColor(17, 24, 39);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(9.2);
+          doc.text("Monatliche Belastung:", 25, 151);
+
+          addPdfKvLine(doc, 25, 186, 158, "Mit KfW-Förderung:", formatEuroWithCode(monthlyKfw));
+          addPdfKvLine(doc, 25, 186, 165, "Bei Marktkonditionen:", formatEuroWithCode(monthlyMarket));
+
+          doc.setFillColor(76, 104, 91);
+          doc.rect(20, 170, 170, 10, "F");
+          doc.setTextColor(255, 255, 255);
+          addPdfKvLine(doc, 25, 186, 176.8, "Monatliche Ersparnis:", formatEuroWithCode(monthlySaving), [255, 255, 255]);
+
+          doc.setFillColor(76, 104, 91);
+          doc.rect(15, 191, 180, 21, "F");
+          doc.setTextColor(255, 255, 255);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(10.5);
+          doc.text("Ihr Zinsvorteil gegenüber Marktkredit (1 Jahr):", 105, 200, { align: "center" });
+          doc.setFontSize(15);
+          doc.text(formatEuroWithCode(yearlySaving), 105, 207.8, { align: "center" });
+
+          doc.setTextColor(17, 24, 39);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(8.4);
+          doc.text("Über diesen Vergleich:", 15, 228);
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(7.3);
+          doc.text(
+            "Dieser Bericht zeigt den Zinsvorteil des KfW-Programms 296 im Vergleich zu marktüblichen Konditionen.",
+            15,
+            233,
+            { maxWidth: 180 },
+          );
+          doc.setFont("helvetica", "bold");
+          doc.text("Hinweis zur Tilgung:", 15, 242.5);
+          doc.setFont("helvetica", "normal");
+          doc.text(
+            "Während der tilgungsfreien Jahre zahlen Sie nur Zinsen. Danach kommt die Tilgung hinzu.",
+            15,
+            247,
+            { maxWidth: 180 },
+          );
+
+          doc.addImage(qr, "PNG", 95, 275, 20, 20);
+
+          doc.addPage();
+          drawPdfHeader(doc, logo, "KfW - 296 KNN im Niedrigpreissegment - Ablauf");
+          const flowBoxX = 10;
+          const flowBoxY = 28;
+          const flowBoxW = 190;
+          const flowBoxH = 240;
+          const flowProps = doc.getImageProperties(kfwAblauf);
+          const flowRatio = flowProps.width / flowProps.height;
+          const flowBoxRatio = flowBoxW / flowBoxH;
+
+          let flowDrawW = flowBoxW;
+          let flowDrawH = flowBoxH;
+
+          if (flowRatio > flowBoxRatio) {
+            flowDrawH = flowBoxW / flowRatio;
+          } else {
+            flowDrawW = flowBoxH * flowRatio;
+          }
+
+          const flowDrawX = flowBoxX + (flowBoxW - flowDrawW) / 2;
+          const flowDrawY = flowBoxY + (flowBoxH - flowDrawH) / 2;
+          doc.addImage(kfwAblauf, "PNG", flowDrawX, flowDrawY, flowDrawW, flowDrawH);
+          doc.link(51.5, 105.79, 54.8, 6.35, { url: "https://www.energy-advice-bavaria.de" });
+          doc.addImage(qr, "PNG", 95, 275, 20, 20);
+
+          doc.save("kfw296-ergebnis.pdf");
+        } catch (error) {
+          alert("PDF konnte nicht erstellt werden. Bitte Seite neu laden und erneut versuchen.");
+          console.error(error);
+        }
+      }
+
+      function getSelectedLabel(selectNode) {
+        const selected = selectNode?.options?.[selectNode.selectedIndex];
+        return selected ? selected.textContent : "-";
+      }
+
+      function allowedGraceYears(term) {
+        if (term === 10) return [0, 1, 2];
+        if (term === 25) return [1, 2, 3];
+        return [1, 2, 3, 4, 5];
+      }
+
+      function requiredRoomsForArea(area) {
+        if (area <= 40) return 1;
+        if (area <= 55) return 2;
+        if (area <= 70) return 3;
+        if (area <= 85) return 4;
+        return 4 + Math.ceil((area - 85) / 15);
+      }
+
+      function calculateMonthlyRate(principal, annualRatePercent, years, graceYears) {
+        const amortizationYears = Math.max(1, years - graceYears);
+        const monthlyRate = annualRatePercent / 100 / 12;
+        const n = amortizationYears * 12;
+        if (monthlyRate === 0) return principal / n;
+        return (principal * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -n));
+      }
+
+      function buildProgress() {
+        progress.innerHTML = "";
+        STEP_LABELS.forEach((label, index) => {
+          const stepNumber = index + 1;
+          const isCompleted = stepNumber < state.step;
+          const stateClass = isCompleted ? "completed" : stepNumber === state.step ? "active" : "";
+          const wrapper = document.createElement("div");
+          wrapper.style.display = "flex";
+          wrapper.style.alignItems = "center";
+
+          const stepNode = document.createElement("div");
+          stepNode.className = `progress-step ${stateClass}`;
+          const check = isCompleted ? '<span class="progress-dot-check">✓</span>' : "";
+          stepNode.innerHTML = `<div class="progress-dot"><span class="progress-dot-number">${stepNumber}</span>${check}</div><div class="progress-label">${label}</div>`;
+          wrapper.appendChild(stepNode);
+
+          if (index < STEP_LABELS.length - 1) {
+            const line = document.createElement("div");
+            line.className = "progress-line";
+            wrapper.appendChild(line);
+          }
+
+          progress.appendChild(wrapper);
+        });
+      }
+
+      function showStep() {
+        for (let i = 1; i <= TOTAL_STEPS; i += 1) {
+          const node = document.getElementById(`step-${i}`);
+          node.classList.toggle("active", i === state.step);
+        }
+
+        backBtn.disabled = state.step === 1;
+        nextBtn.textContent = state.step === TOTAL_STEPS ? "Ergebnis speichern" : "Weiter";
+        stepError.style.display = "none";
+        stepError.textContent = "";
+
+        buildProgress();
+
+        if (state.step === 5) {
+          renderResult();
+        }
+      }
+
+      function readUnits() {
+        const count = Math.max(1, Math.min(200, Number(wohneinheitenInput.value) || 1));
+        const units = [];
+
+        for (let i = 1; i <= count; i += 1) {
+          const area = Number(document.querySelector(`[data-area="${i}"]`)?.value) || 0;
+          const rooms = Number(document.querySelector(`[data-rooms="${i}"]`)?.value) || 0;
+          units.push({ id: i, area, rooms });
+        }
+
+        return units;
+      }
+
+      function renderUnits() {
+        const tbody = document.getElementById("unitRows");
+        const count = Math.max(1, Math.min(200, Number(wohneinheitenInput.value) || 1));
+        tbody.innerHTML = "";
+
+        for (let i = 1; i <= count; i += 1) {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${i}</td>
+            <td><input type="number" min="15" max="600" value="50" data-area="${i}" /></td>
+            <td><input type="number" min="1" max="30" value="2" data-rooms="${i}" /></td>
+            <td id="unit-status-${i}">-</td>
+          `;
+          tbody.appendChild(row);
+        }
+
+        tbody.querySelectorAll("input").forEach((input) => {
+          input.addEventListener("input", renderUnitChecks);
+        });
+
+        renderUnitChecks();
+      }
+
+      function renderUnitChecks() {
+        const units = readUnits();
+
+        units.forEach((unit) => {
+          const required = requiredRoomsForArea(unit.area);
+          const missing = Math.max(0, required - unit.rooms);
+          const node = document.getElementById(`unit-status-${unit.id}`);
+
+          if (!node) return;
+
+          if (missing === 0) {
+            node.textContent = "Erfüllt";
+            node.className = "status-ok";
+          } else {
+            node.textContent = `Nicht erfüllt. Es fehlen ${missing} Aufenthaltsraum${missing > 1 ? "e" : ""}.`;
+            node.className = "status-bad";
+          }
+        });
+      }
+
+      function showError(message) {
+        stepError.textContent = message;
+        stepError.style.display = "block";
+      }
+
+      function validateCurrentStep() {
+        stepError.style.display = "none";
+        stepError.textContent = "";
+
+        if (state.step === 1) {
+          const projektart = document.getElementById("projektart").value;
+          const plz = document.getElementById("plz").value.trim();
+          const count = Number(wohneinheitenInput.value);
+
+          if (!projektart) {
+            showError("Bitte Projektart wählen.");
+            return false;
+          }
+          if (!Number.isInteger(count) || count < 1 || count > 200) {
+            showError("Anzahl Wohneinheiten: Bitte eine ganze Zahl zwischen 1 und 200 eingeben.");
+            return false;
+          }
+          if (!/^\d{5}$/.test(plz)) {
+            showError("Bitte eine deutsche PLZ mit 5 Ziffern eingeben.");
+            return false;
+          }
+        }
+
+        if (state.step === 3) {
+          if (!heater.value) {
+            showError("Bitte Wärmeerzeuger wählen.");
+            return false;
+          }
+        }
+
+        if (state.step === 4) {
+          const units = readUnits();
+          const invalid = units.find((unit) => unit.area < 15 || unit.area > 600 || unit.rooms < 1 || unit.rooms > 30);
+          if (invalid) {
+            showError(
+              `Wohneinheit ${invalid.id}: Bitte Wohnfläche 15–600 m² und Aufenthaltsräume 1–30 eingeben.`,
+            );
+            return false;
+          }
+        }
+
+        return true;
+      }
+
+      function pushIssue(list, level, title, detail, action) {
+        list.push({ level, title, detail, action });
+      }
+
+      function evaluate() {
+        const issues = [];
+        const units = readUnits();
+
+        const eh55 = document.getElementById("eh55").value;
+        const lca = document.getElementById("lca").value;
+        const lcc = document.getElementById("lcc").value;
+
+        if (begonnen.checked) {
+          pushIssue(
+            issues,
+            "ko",
+            "Vorhaben bereits begonnen",
+            "Bereits begonnene oder abgeschlossene Vorhaben sind in diesem Programm nicht förderfähig.",
+            "Antrag vor Vorhabensbeginn stellen.",
+          );
+        }
+
+        if (umschuldung.checked) {
+          pushIssue(
+            issues,
+            "ko",
+            "Nicht förderfähiger Zweck",
+            "Umschuldung, Nachfinanzierung und reiner Grundstückskauf sind ausgeschlossen.",
+            "Förderfähige Neubau-/Erstkaufkosten separat planen.",
+          );
+        }
+
+        if (parallel.checked) {
+          pushIssue(
+            issues,
+            "ko",
+            "Unzulässige Parallelförderung",
+            "Für dieselbe Wohneinheit ist keine gleichzeitige Förderung mit BEG oder KfW 297/298/299/300 möglich.",
+            "Förderstrategie auf ein Programm je Maßnahme/Wohneinheit festlegen.",
+          );
+        }
+
+        if (heater.value === "fossil" || heater.value === "biomasse") {
+          pushIssue(
+            issues,
+            "ko",
+            "Wärmeerzeuger unzulässig",
+            "Fossile Wärmeerzeuger oder Biomasse sind ausgeschlossen.",
+            "Auf zulässigen Wärmeerzeuger umstellen (z. B. Wärmepumpe oder Fernwärme).",
+          );
+        }
+
+        if (eh55 === "nein") {
+          pushIssue(
+            issues,
+            "ko",
+            "EH55 nicht erreicht",
+            "Die technischen Mindestanforderungen verlangen den Standard Effizienzhaus 55.",
+            "Energieplanung anpassen und EH55-Nachweis erstellen.",
+          );
+        }
+
+        if (lca === "nein") {
+          pushIssue(
+            issues,
+            "ko",
+            "Klimawirkung nicht im erlaubten Bereich",
+            "Der Nachweis zur Klimawirkung ist nicht erfüllt.",
+            "Mit Energieberater/Planungsteam nacharbeiten und Nachweis aktualisieren.",
+          );
+        }
+
+        if (lcc === "nein") {
+          pushIssue(
+            issues,
+            "ko",
+            "Nachweis zu Lebenszyklus-Kosten nicht erfüllt",
+            "Die Berechnung der Lebenszyklus-Kosten mit dem KNN-Tool erfüllt die Vorgaben nicht.",
+            "Bitte im KNN-Tool nachrechnen und Nachweis ergänzen.",
+          );
+        }
+
+        if (eh55 === "unklar") {
+          pushIssue(
+            issues,
+            "warn",
+            "EH55 noch unklar",
+            "Ob EH55 erreicht wird, ist aktuell nicht bestätigt.",
+            "Bitte durch EEE bestätigen lassen.",
+          );
+        }
+
+        if (lca === "unklar") {
+          pushIssue(
+            issues,
+            "warn",
+            "Klimawirkung noch unklar",
+            "Der Nachweis zur Klimawirkung liegt noch nicht eindeutig vor.",
+            "Bitte durch Energieberater/EEE prüfen.",
+          );
+        }
+
+        if (lcc === "unklar") {
+          pushIssue(
+            issues,
+            "warn",
+            "Lebenszyklus-Kosten noch unklar",
+            "Der Nachweis zu den Lebenszyklus-Kosten fehlt oder ist unvollständig.",
+            "Bitte im KNN-Tool berechnen und bestätigen lassen.",
+          );
+        }
+
+        units.forEach((unit) => {
+          const requiredRooms = requiredRoomsForArea(unit.area);
+          const missingRooms = Math.max(0, requiredRooms - unit.rooms);
+          if (missingRooms > 0) {
+            pushIssue(
+              issues,
+              "ko",
+              `Wohneinheit ${unit.id}: Aufenthaltsräume reichen nicht aus`,
+              `Erforderlich sind ${requiredRooms}, angegeben sind ${unit.rooms}.`,
+              `Wohneinheit ${unit.id} muss um ${missingRooms} Aufenthaltsraum${missingRooms > 1 ? "e" : ""} ergänzt werden.`,
+            );
+          }
+        });
+
+        const hasKo = issues.some((issue) => issue.level === "ko");
+        const hasWarn = issues.some((issue) => issue.level === "warn");
+        const status = hasKo ? "nicht_geeignet" : hasWarn ? "unklar" : "geeignet";
+
+        const count = Math.max(1, Math.min(200, Number(wohneinheitenInput.value) || 1));
+        const maxKreditsumme = count * KREDIT_PRO_WE;
+        const term = Number(document.getElementById("laufzeit").value);
+        const grace = Number(document.getElementById("tilgungsfrei").value);
+        const rate = Number(document.getElementById("zinssatz").value);
+
+        const monatlicheRate = Number.isFinite(rate)
+          ? calculateMonthlyRate(maxKreditsumme, rate, term, grace)
+          : undefined;
+
+        return {
+          status,
+          issues,
+          maxKreditsumme,
+          monatlicheRate,
+        };
+      }
+
+      function renderResult() {
+        const result = evaluate();
+
+        const badge = document.getElementById("resultBadge");
+        badge.className = `badge ${result.status}`;
+        badge.textContent = `Gesamtstatus: ${result.status.replace("_", " ")}`;
+
+        document.getElementById("overviewProjektart").textContent = getSelectedLabel(projektartSelect);
+        document.getElementById("overviewWohneinheiten").textContent = String(
+          Math.max(1, Math.min(200, Number(wohneinheitenInput.value) || 1)),
+        );
+        document.getElementById("overviewPlz").textContent = plzInput.value.trim() || "-";
+        document.getElementById("overviewEh55").textContent = getSelectedLabel(eh55Select);
+        document.getElementById("overviewWaerme").textContent = getSelectedLabel(heater);
+
+        document.getElementById("maxSum").textContent = formatEuro(result.maxKreditsumme);
+        const advantage = Math.max(0, MARKET_RATE - KFW296_COMPARE_RATE);
+        document.getElementById("compareKfwRate").textContent = formatPercent(KFW296_COMPARE_RATE);
+        document.getElementById("compareMarketRate").textContent = formatPercent(MARKET_RATE);
+        document.getElementById("compareAdvantage").textContent = `Ihr Vorteil: ${advantage
+          .toFixed(2)
+          .replace(".", ",")} % günstigerer Zins!`;
+        document.getElementById("compareSaving").textContent = `Bei ${formatEuro(result.maxKreditsumme)} Darlehenssumme sparen Sie über die Laufzeit mehrere Tausend Euro an Zinsen.`;
+
+        const issuesNode = document.getElementById("issues");
+        issuesNode.innerHTML = "";
+
+        if (result.issues.length === 0) {
+          const li = document.createElement("li");
+          li.textContent = "Keine offenen Punkte.";
+          issuesNode.appendChild(li);
+          return;
+        }
+
+        result.issues.forEach((issue) => {
+          const li = document.createElement("li");
+          li.innerHTML = `<strong>${issue.title}</strong><br>${issue.detail}<br><span class="muted">Was muss ich ändern? ${issue.action}</span>`;
+          issuesNode.appendChild(li);
+        });
+      }
+
+      function renderGraceYears() {
+        const term = Number(laufzeitSelect.value);
+        const years = allowedGraceYears(term);
+        const current = Number(tilgungsfreiSelect.value);
+
+        tilgungsfreiSelect.innerHTML = "";
+        years.forEach((year) => {
+          const option = document.createElement("option");
+          option.value = String(year);
+          option.textContent = String(year);
+          tilgungsfreiSelect.appendChild(option);
+        });
+
+        if (years.includes(current)) {
+          tilgungsfreiSelect.value = String(current);
+        } else {
+          tilgungsfreiSelect.value = String(years[0]);
+        }
+      }
+
+      function updateKoHints() {
+        const koEarly = document.getElementById("koEarly");
+        koEarly.style.display = begonnenOrKo() ? "block" : "none";
+
+        noneApplies.checked = !begonnen.checked && !umschuldung.checked && !parallel.checked;
+
+        const heaterKo = document.getElementById("heaterKo");
+        heaterKo.style.display = heater.value === "fossil" || heater.value === "biomasse" ? "block" : "none";
+
+        const eh55Ko = document.getElementById("eh55Ko");
+        eh55Ko.style.display = eh55Select.value === "nein" ? "block" : "none";
+      }
+
+      function begonnenOrKo() {
+        return begonnen.checked || umschuldung.checked || parallel.checked;
+      }
+
+      function next() {
+        if (!validateCurrentStep()) return;
+
+        if (state.step < TOTAL_STEPS) {
+          state.step += 1;
+          showStep();
+        } else {
+          renderResult();
+        }
+      }
+
+      function back() {
+        if (state.step > 1) {
+          state.step -= 1;
+          showStep();
+        }
+      }
+
+      wohneinheitenInput.addEventListener("change", renderUnits);
+      begonnen.addEventListener("change", updateKoHints);
+      umschuldung.addEventListener("change", updateKoHints);
+      parallel.addEventListener("change", updateKoHints);
+
+      noneApplies.addEventListener("change", (event) => {
+        if (event.target.checked) {
+          begonnen.checked = false;
+          umschuldung.checked = false;
+          parallel.checked = false;
+          noneApplies.checked = true;
+          updateKoHints();
+        }
+      });
+
+      heater.addEventListener("change", updateKoHints);
+      eh55Select.addEventListener("change", updateKoHints);
+
+      laufzeitSelect.addEventListener("change", () => {
+        const term = Number(laufzeitSelect.value);
+        zinssatzInput.value = RATE_BY_TERM[term] ?? "";
+        renderGraceYears();
+        syncKfwRateTable();
+        if (state.step === 5) renderResult();
+      });
+
+      tilgungsfreiSelect.addEventListener("change", () => {
+        if (state.step === 5) renderResult();
+      });
+
+      zinssatzInput.addEventListener("input", () => {
+        if (state.step === 5) renderResult();
+      });
+
+      createPdfBtn.addEventListener("click", createResultPdf);
+
+      backBtn.addEventListener("click", back);
+      nextBtn.addEventListener("click", next);
+
+      renderUnits();
+      laufzeitSelect.value = "25";
+      zinssatzInput.value = RATE_BY_TERM[25];
+      renderGraceYears();
+      syncKfwRateTable();
+      updateKoHints();
+      showStep();
+
+      loadRates().then(() => {
+        const term = Number(laufzeitSelect.value);
+        zinssatzInput.value = RATE_BY_TERM[term] ?? zinssatzInput.value;
+        syncKfwRateTable();
+        if (state.step === 5) renderResult();
+      });
+    </script>
+  </body>
+</html>
