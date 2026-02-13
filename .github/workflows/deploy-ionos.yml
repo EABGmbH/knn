@@ -18,19 +18,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
       - name: Deploy via SFTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.IONOS_FTP_SERVER }}
-          username: ${{ secrets.IONOS_FTP_USERNAME }}
-          password: ${{ secrets.IONOS_FTP_PASSWORD }}
-          protocol: sftp
-          port: 22
-          local-dir: ./
-          server-dir: ${{ endsWith(secrets.IONOS_FTP_SERVER_DIR, '/') && secrets.IONOS_FTP_SERVER_DIR || format('{0}/', secrets.IONOS_FTP_SERVER_DIR) }}
-          dangerous-clean-slate: false
-          exclude: |
-            **/.git*
-            **/.github/**
-            **/scripts/**
-            **/README.md
+        env:
+          IONOS_FTP_SERVER: ${{ secrets.IONOS_FTP_SERVER }}
+          IONOS_FTP_USERNAME: ${{ secrets.IONOS_FTP_USERNAME }}
+          IONOS_FTP_PASSWORD: ${{ secrets.IONOS_FTP_PASSWORD }}
+          IONOS_FTP_SERVER_DIR: ${{ secrets.IONOS_FTP_SERVER_DIR }}
+        run: |
+          HOST="${IONOS_FTP_SERVER#sftp://}"
+          HOST="${HOST#ftp://}"
+          TARGET_DIR="${IONOS_FTP_SERVER_DIR%/}/"
+
+          lftp -u "$IONOS_FTP_USERNAME","$IONOS_FTP_PASSWORD" "sftp://$HOST" <<EOF
+          set sftp:auto-confirm yes
+          set net:max-retries 2
+          set net:timeout 20
+          mirror -R --verbose \
+            --exclude-glob .git* \
+            --exclude-glob .github \
+            --exclude-glob scripts \
+            --exclude-glob README.md \
+            ./ "$TARGET_DIR"
+          bye
+          EOF
