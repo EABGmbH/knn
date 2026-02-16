@@ -29,12 +29,17 @@ jobs:
         run: |
           HOST="${IONOS_FTP_SERVER#sftp://}"
           HOST="${HOST#ftp://}"
-          TARGET_DIR="/software/knn/"
+          TARGET_DIR="${IONOS_FTP_SERVER_DIR:-software/knn}"
+          TARGET_DIR="${TARGET_DIR#/}"
+          TARGET_DIR="${TARGET_DIR%/}/"
+
+          echo "Deploy target directory: $TARGET_DIR"
 
           lftp -u "$IONOS_FTP_USERNAME","$IONOS_FTP_PASSWORD" "sftp://$HOST" <<EOF
           set sftp:auto-confirm yes
           set net:max-retries 2
           set net:timeout 20
+          mkdir -p "$TARGET_DIR"
           mirror -R --verbose \
             --delete \
             --exclude-glob .git* \
