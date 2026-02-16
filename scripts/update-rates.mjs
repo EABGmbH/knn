@@ -5,7 +5,7 @@ const OUTPUT_FILE = new URL("../rates.json", import.meta.url);
 const DEFAULT_RATES = {
   byTerm: { 10: 0.01, 25: 0.61, 35: 0.86 },
   kfw296CompareRate: 0.01,
-  marketRate: 3.96,
+  marketRate: 3.91,
 };
 
 const SOURCES = {
