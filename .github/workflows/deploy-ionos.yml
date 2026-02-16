@@ -28,7 +28,7 @@ jobs:
         run: |
           HOST="${IONOS_FTP_SERVER#sftp://}"
           HOST="${HOST#ftp://}"
-          TARGET_DIR="software/knn/"
+          TARGET_DIR="wordpress/software/knn/"
 
           echo "Deploy target directory: $TARGET_DIR"
 
