@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-13T13:28:36.996Z",
+  "updatedAt": "2026-02-16T08:46:48.886Z",
   "displayStand": "Februar 2026",
   "sources": {
     "kfw": {
@@ -18,6 +18,6 @@
       "35": 0.86
     },
     "kfw296CompareRate": 0.01,
-    "marketRate": 3.96
+    "marketRate": 3.91
   }
 }
