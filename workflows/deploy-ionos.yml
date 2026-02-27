@@ -1,0 +1,48 @@
+name: Deploy to IONOS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-ionos
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: Deploy via SFTP
+        env:
+          IONOS_FTP_SERVER: ${{ secrets.IONOS_FTP_SERVER }}
+          IONOS_FTP_USERNAME: ${{ secrets.IONOS_FTP_USERNAME }}
+          IONOS_FTP_PASSWORD: ${{ secrets.IONOS_FTP_PASSWORD }}
+        run: |
+          HOST="${IONOS_FTP_SERVER#sftp://}"
+          HOST="${HOST#ftp://}"
+          TARGET_DIR="wordpress/software/knn/"
+
+          echo "Deploy target directory: $TARGET_DIR"
+
+          lftp -u "$IONOS_FTP_USERNAME","$IONOS_FTP_PASSWORD" "sftp://$HOST" <<EOF
+          set sftp:auto-confirm yes
+          set net:max-retries 2
+          set net:timeout 20
+          mkdir -p "$TARGET_DIR"
+          mirror -R --verbose \
+            --delete \
+            --exclude-glob .git* \
+            --exclude-glob .github \
+            --exclude-glob scripts \
+            --exclude-glob README.md \
+            ./ "$TARGET_DIR"
+          bye
+          EOF
