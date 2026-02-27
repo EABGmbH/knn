@@ -35,7 +35,12 @@ python -m http.server 4173
 
 ## Automatische Zins-Updates (Scraping)
 
-Die Zinsen werden aus KfW- und Interhyp-Seiten in `rates.json` geschrieben.
+Die Zinsen werden aus KfW- und Interhyp-Seiten in folgende Dateien geschrieben:
+
+- `data/kfw/296.json`
+- `data/market/interhyp_10y_ltv_gt90.json`
+
+Das Frontend (`index.html`) liest diese Dateien direkt ein.
 
 Aktuelle Zielquellen:
 
@@ -44,26 +49,13 @@ Aktuelle Zielquellen:
 - Interhyp: `Zinsbindung 10 Jahre` bei `Beleihungsauslauf >90` auf
   `https://www.interhyp.de/zinsen/`
 
-- Scraping-Skript: `scripts/update-rates.mjs`
-- Datenquelle für Frontend: `rates.json`
-- Automatischer Job: `.github/workflows/update-rates.yml`
-
-Manuell ausführen:
-
-```bash
-node scripts/update-rates.mjs
-```
-
-Optional eigene URLs setzen:
-
-```bash
-KFW_RATES_URL="..." INTERHYP_RATES_URL="..." node scripts/update-rates.mjs
-```
+- KfW-Workflow: `.github/workflows/kfw296.yml`
+- Interhyp-Workflow: `.github/workflows/interhyp.yml`
 
 Hinweis:
 
 - Das Scraping ist heuristisch (Seitenstruktur kann sich ändern).
-- Bei Fehlern werden letzte/Default-Werte als Fallback in `rates.json` verwendet.
+- Bei Fehlern bleiben last-known-good JSON-Dateien unverändert.
 
 ## Auto-Deploy zu IONOS (GitHub Actions)
 
@@ -77,3 +69,16 @@ Benötigte GitHub Repository-Secrets:
 - `IONOS_FTP_USERNAME`
 - `IONOS_FTP_PASSWORD`
 - `IONOS_FTP_SERVER_DIR` (z. B. `/` oder `/htdocs/`)
+
+## Neue TypeScript Scraper (GitHub Actions)
+
+- KfW 296 JSON: `data/kfw/296.json`
+- Interhyp JSON: `data/market/interhyp_10y_ltv_gt90.json`
+
+Lokal testen:
+
+```bash
+npm ci
+npm run kfw:296
+npm run market:interhyp
+```

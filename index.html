@@ -18,13 +18,13 @@
 
       body {
         margin: 0;
-        background: linear-gradient(180deg, #3b5748 0%, #345243 100%);
+        background: linear-gradient(180deg, #3b5748 0%, #3b5748 100%);
         color: #ffffff;
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       }
 
       .wrap {
-        max-width: 980px;
+        max-width: 1200px;
         margin: 0 auto;
         padding: 32px 20px;
       }
@@ -53,6 +53,56 @@
         margin: 0 0 10px;
         font-size: 1.18rem;
         letter-spacing: 0.1px;
+      }
+
+      .project-tiles {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .project-tile {
+        border: 2px solid #d1d5db;
+        border-radius: 12px;
+        background: #f3f4f6;
+        min-height: 130px;
+        padding: 18px 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        cursor: pointer;
+        transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .project-tile.selected {
+        border-color: #476755;
+        background: #5b7467;
+        color: #ffffff;
+        box-shadow: 0 6px 14px rgba(59, 87, 72, 0.22);
+      }
+
+      .project-icon {
+        font-size: 2rem;
+        line-height: 1;
+      }
+
+      .project-title {
+        margin-top: 10px;
+        font-size: 1.04rem;
+        font-weight: 700;
+      }
+
+      .project-sub {
+        margin-top: 6px;
+        font-size: 0.88rem;
+        color: #4b5563;
+        line-height: 1.35;
+      }
+
+      .project-tile.selected .project-sub {
+        color: rgba(255, 255, 255, 0.92);
       }
 
       .progress {
@@ -199,7 +249,7 @@
 
       #step-3 .grid {
         column-gap: 18px;
-        row-gap: 18px;
+        row-gap: 10px;
       }
 
       #step-3 .field label {
@@ -261,6 +311,116 @@
         padding: 8px;
       }
 
+      .ko-grid {
+        margin-top: 12px;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .ko-card {
+        border: 2px solid #dde3ea;
+        border-radius: 12px;
+        background: #f8fafc;
+        padding: 14px;
+        text-align: left;
+        cursor: pointer;
+        transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .ko-card:hover {
+        border-color: #c7d2df;
+      }
+
+      .ko-card.selected {
+        border-color: #b91c1c;
+        background: #fef2f2;
+        box-shadow: 0 4px 10px rgba(185, 28, 28, 0.1);
+      }
+
+      .ko-card.safe {
+        grid-column: 1 / -1;
+      }
+
+      .ko-divider {
+        grid-column: 1 / -1;
+        border-top: 1px solid #d8e0e8;
+        margin: 2px 0;
+      }
+
+      .tech-divider {
+        margin-top: 14px;
+        margin-bottom: 10px;
+      }
+
+      .ko-card.safe.selected {
+        border-color: #15803d;
+        background: #f0fdf4;
+        box-shadow: 0 4px 10px rgba(21, 128, 61, 0.1);
+      }
+
+      .ko-title {
+        font-weight: 700;
+        color: #1f2937;
+      }
+
+      .ko-sub {
+        margin-top: 6px;
+        color: #4b5563;
+        font-size: 0.88rem;
+        line-height: 1.4;
+      }
+
+      .ko-hidden {
+        display: none;
+      }
+
+      .tech-fixed {
+        border: 1px solid #cfe6d7;
+        border-radius: 10px;
+        background: #edf9f1;
+        padding: 12px;
+        color: #14532d;
+        font-weight: 600;
+      }
+
+      .tech-tiles {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .tech-tile {
+        border: 2px solid #dde3ea;
+        border-radius: 10px;
+        background: #f8fafc;
+        padding: 12px;
+        text-align: center;
+        cursor: pointer;
+        transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .tech-tile:hover {
+        border-color: #c7d2df;
+      }
+
+      .tech-tile.selected {
+        border-color: #476755;
+        background: #eef5f0;
+        box-shadow: 0 4px 10px rgba(71, 103, 85, 0.14);
+      }
+
+      .tech-icon {
+        font-size: 1.3rem;
+      }
+
+      .tech-name {
+        margin-top: 6px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #1f2937;
+      }
+
       input[type="checkbox"] {
         width: 16px;
         height: 16px;
@@ -319,6 +479,79 @@
 
       #step-4 .table-wrap {
         margin-top: 14px;
+      }
+
+      #step-4 table {
+        table-layout: fixed;
+        width: 100%;
+      }
+
+      #step-4 thead th:nth-child(1),
+      #step-4 tbody td:nth-child(1) {
+        width: 8%;
+      }
+
+      #step-4 thead th:nth-child(2),
+      #step-4 tbody td:nth-child(2) {
+        width: 32%;
+      }
+
+      #step-4 thead th:nth-child(3),
+      #step-4 tbody td:nth-child(3) {
+        width: 30%;
+      }
+
+      #step-4 thead th:nth-child(4),
+      #step-4 tbody td:nth-child(4) {
+        width: 30%;
+      }
+
+      #step-4 tbody td:nth-child(2) input,
+      #step-4 tbody td:nth-child(3) input {
+        width: 100%;
+      }
+
+      .rule-compact {
+        margin-top: 10px;
+        border: 1px solid #d9e2ea;
+        border-radius: 10px;
+        background: #f8fafc;
+        padding: 10px 12px;
+      }
+
+      .rule-compact summary {
+        cursor: pointer;
+        font-weight: 700;
+        color: #1f2937;
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        padding: 5px 10px;
+        min-height: 30px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        line-height: 1;
+        white-space: nowrap;
+      }
+
+      .status-pill.ok {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .status-pill.bad {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      #step-4 table th:last-child,
+      #step-4 table td:last-child {
+        min-width: 170px;
+        white-space: nowrap;
       }
 
       .table-wrap {
@@ -563,6 +796,8 @@
         background: #eceff3;
         padding: 16px;
         text-align: center;
+        display: flex;
+        flex-direction: column;
       }
 
       .cta-card.green {
@@ -579,6 +814,7 @@
         color: #1f2937;
         font-size: 0.95rem;
         line-height: 1.4;
+        flex: 1;
       }
 
       .cta-button {
@@ -832,6 +1068,10 @@
           grid-template-columns: 1fr;
         }
 
+        .project-tiles {
+          grid-template-columns: 1fr;
+        }
+
         .actions {
           gap: 8px;
         }
@@ -839,6 +1079,14 @@
         .zinsvergleich-grid,
         .cta-grid {
           grid-template-columns: 1fr;
+        }
+
+        .ko-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .tech-tiles {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
         #step-3 .field label {
@@ -855,24 +1103,32 @@
 
         <div id="step-1" class="step active">
           <div class="grid">
-            <div class="field">
-              <label for="projektart">Projektart</label>
-              <select id="projektart">
-                <option value="">Bitte wählen</option>
-                <option value="neubau">Neubau</option>
+            <div class="field full">
+              <label>Projekt</label>
+              <div class="project-tiles">
+                <div class="project-tile selected" data-projektart-tile="neubau">
+                  <div class="project-icon">🏠</div>
+                  <div class="project-title">Neubau</div>
+                  <div class="project-sub">Neues Wohngebäude</div>
+                </div>
+                <div class="project-tile" data-projektart-tile="erstkauf">
+                  <div class="project-icon">🏢</div>
+                  <div class="project-title">Erstkauf</div>
+                  <div class="project-sub">Ersterwerb einer Immobilie</div>
+                </div>
+              </div>
+              <select id="projektart" hidden>
+                <option value="neubau" selected>Neubau</option>
                 <option value="erstkauf">Erstkauf</option>
               </select>
             </div>
 
-            <div class="field">
+            <div class="field full">
               <label for="wohneinheiten">Anzahl Wohneinheiten</label>
               <input id="wohneinheiten" type="number" min="1" max="200" value="1" />
             </div>
 
-            <div class="field full">
-              <label for="plz">Objektstandort (PLZ)</label>
-              <input id="plz" type="text" placeholder="z. B. 50667" />
-            </div>
+            <input id="plz" type="hidden" value="" />
           </div>
         </div>
 
@@ -883,16 +1139,36 @@
             nicht passend.
           </p>
 
-          <label class="check"><input id="begonnen" type="checkbox" />Vorhaben bereits begonnen?</label>
-          <label class="check"
-            ><input id="umschuldung" type="checkbox" />Umschuldung, Nachfinanzierung oder Grundstückskauf?</label
-          >
-          <label class="check"
-            ><input id="parallel" type="checkbox" />Parallelförderung BEG oder KfW 297/298/299/300 für dieselbe Wohneinheit?</label
-          >
-          <label class="check good"
-            ><input id="noneApplies" type="checkbox" />Nichts davon trifft zu.</label
-          >
+          <div class="ko-grid">
+            <div class="ko-card" data-ko-toggle="begonnen">
+              <div class="ko-title">Vorhaben bereits begonnen?</div>
+              <div class="ko-sub">Wenn bereits begonnen wurde, ist aktuell keine Förderung möglich.</div>
+            </div>
+
+            <div class="ko-card" data-ko-toggle="umschuldung">
+              <div class="ko-title">Umschuldung / Nachfinanzierung / Grundstückskauf?</div>
+              <div class="ko-sub">Diese Zwecke sind in diesem Programm ausgeschlossen.</div>
+            </div>
+
+            <div class="ko-card" data-ko-toggle="parallel">
+              <div class="ko-title">Unzulässige Parallelförderung?</div>
+              <div class="ko-sub">BEG oder KfW 297/298/299/300 für dieselbe Wohneinheit ist nicht zulässig.</div>
+            </div>
+
+            <div class="ko-divider" aria-hidden="true"></div>
+
+            <div class="ko-card safe" data-ko-toggle="noneApplies">
+              <div class="ko-title">✅ Nichts davon trifft zu</div>
+              <div class="ko-sub">Ihr Vorhaben erfüllt die K.O.-Prüfung auf dieser Seite.</div>
+            </div>
+          </div>
+
+          <div class="ko-hidden">
+            <input id="begonnen" type="checkbox" />
+            <input id="umschuldung" type="checkbox" />
+            <input id="parallel" type="checkbox" />
+            <input id="noneApplies" type="checkbox" />
+          </div>
 
           <p id="koEarly" class="alert-red" style="display: none">
             Aktuell nicht geeignet. Was muss ich ändern? Bitte K.O.-Punkte entfernen (z. B. Antrag vor Beginn,
@@ -902,24 +1178,45 @@
 
         <div id="step-3" class="step">
           <h2>Technische Voraussetzungen</h2>
-          <p class="hint step-intro">
-            Falls Ihnen etwas unklar ist, wählen Sie einfach „Unklar". Das Ergebnis zeigt dann, was noch geprüft
-            werden muss.
-          </p>
 
           <div class="grid">
             <div class="field">
-              <label for="eh55">Effizienzhaus 55 erreicht?</label>
-              <select id="eh55">
-                <option value="ja">Ja</option>
-                <option value="nein">Nein</option>
-                <option value="unklar">Unklar</option>
+              <label>Effizienzhaus 55</label>
+              <div class="tech-fixed">✅ Mindestens EH55 wird vorausgesetzt</div>
+              <select id="eh55" hidden>
+                <option value="ja" selected>Ja</option>
               </select>
             </div>
 
-            <div class="field">
-              <label for="waermeerzeuger">Wärmeerzeuger</label>
-              <select id="waermeerzeuger">
+            <div class="field full">
+              <label>Wärmeerzeuger</label>
+              <div class="tech-tiles" id="heaterTiles">
+                <div class="tech-tile" data-heater-tile="waermepumpe">
+                  <div class="tech-icon">🌡️</div>
+                  <div class="tech-name">Wärmepumpe</div>
+                </div>
+                <div class="tech-tile" data-heater-tile="fernwaerme">
+                  <div class="tech-icon">🔥</div>
+                  <div class="tech-name">Fernwärme</div>
+                </div>
+                <div class="tech-tile" data-heater-tile="solarthermie">
+                  <div class="tech-icon">☀️</div>
+                  <div class="tech-name">Solarthermie</div>
+                </div>
+                <div class="tech-tile" data-heater-tile="stromdirekt">
+                  <div class="tech-icon">⚡</div>
+                  <div class="tech-name">Stromdirekt</div>
+                </div>
+                <div class="tech-tile" data-heater-tile="fossil">
+                  <div class="tech-icon">🛢️</div>
+                  <div class="tech-name">Fossil</div>
+                </div>
+                <div class="tech-tile" data-heater-tile="biomasse">
+                  <div class="tech-icon">🌱</div>
+                  <div class="tech-name">Biomasse</div>
+                </div>
+              </div>
+              <select id="waermeerzeuger" hidden>
                 <option value="">Bitte wählen</option>
                 <option value="waermepumpe">Wärmepumpe</option>
                 <option value="fernwaerme">Fernwärme</option>
@@ -929,40 +1226,18 @@
                 <option value="biomasse">Biomasse</option>
               </select>
             </div>
-
-            <div class="field">
-              <label for="lca">Klimabilanz (Grenzwert max. 24) bestätigt?</label>
-              <select id="lca">
-                <option value="ja">Ja</option>
-                <option value="nein">Nein</option>
-                <option value="unklar" selected>Unklar</option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label for="lcc">Lebenszyklus-Kosten mit KNN-Tool bestätigt?</label>
-              <select id="lcc">
-                <option value="ja">Ja</option>
-                <option value="nein">Nein</option>
-                <option value="unklar" selected>Unklar</option>
-              </select>
-            </div>
           </div>
 
+          <div class="ko-divider tech-divider" aria-hidden="true"></div>
+
           <p class="hint hint-important">
-            <strong>Hinweis:</strong><br />Die beiden Nachweise zu Klimawirkung und Lebenszyklus-Kosten kommen in der
-            Regel vom
-            Energieberater bzw. Planungsteam.
+            Klimabilanz (Grenzwert max. 24) und Lebenszyklus-Kosten müssen über Energieberater/Planungsteam
+            nachgewiesen werden. Diese Werte werden bei dieser Ersteinschätzung ausgenommen.
           </p>
 
           <p id="heaterKo" class="alert-red" style="display: none">
             Nicht geeignet. Was muss ich ändern? Bitte auf zulässigen Wärmeerzeuger umstellen (z. B. Wärmepumpe,
             Fernwärme).
-          </p>
-
-          <p id="eh55Ko" class="alert-red" style="display: none">
-            Nicht geeignet. Was muss ich ändern? Bitte Effizienzhaus-55-Standard nachweisen bzw. Planung auf EH55
-            anpassen.
           </p>
         </div>
 
@@ -971,20 +1246,21 @@
           <p class="hint" style="margin: 0 0 10px">
             Die Anzahl der Aufenthalts­räume ergibt sich aus der Wohn­fläche Ihrer Immobilie.
           </p>
-          <ul class="list rule-list">
-            <li><strong>1 Raum:</strong> bis 40 m² (Standard), bis 55 m² (rollstuhlgerecht)</li>
-            <li><strong>2 Räume:</strong> bis 55 m² (Standard), bis 70 m² (rollstuhlgerecht)</li>
-            <li><strong>3 Räume:</strong> bis 70 m² (Standard), bis 85 m² (rollstuhlgerecht)</li>
-            <li><strong>4 Räume:</strong> bis 85 m² (Standard), bis 100 m² (rollstuhlgerecht)</li>
-            <li><strong>Je 1 weiterer Raum:</strong> bis zusätzlich 15 m² (Standard und rollstuhlgerecht)</li>
-          </ul>
-
-          <details class="hint room-hint-dropdown">
-            <summary>Was zählt als Aufenthaltsraum?</summary>
-            Ein Aufenthaltsraum ist ein Raum ab 10 m², der als Wohn- und Rückzugsraum für maximal 2 Personen dient.
-            Dazu zählt ein abgeschlossener Wohnraum innerhalb einer Wohneinheit, der nach der jeweiligen
-            Landesbauordnung als Aufenthaltsraum gilt. Wohnküchen/Küchen gelten ebenfalls als Aufenthaltsraum,
-            während Sanitärräume nicht dazu zählen.
+          <details class="rule-compact">
+            <summary>Regel-Guide anzeigen</summary>
+            <ul class="list rule-list">
+              <li><strong>1 Raum:</strong> bis 40 m² (Standard), bis 55 m² (rollstuhlgerecht)</li>
+              <li><strong>2 Räume:</strong> bis 55 m² (Standard), bis 70 m² (rollstuhlgerecht)</li>
+              <li><strong>3 Räume:</strong> bis 70 m² (Standard), bis 85 m² (rollstuhlgerecht)</li>
+              <li><strong>4 Räume:</strong> bis 85 m² (Standard), bis 100 m² (rollstuhlgerecht)</li>
+              <li><strong>Je 1 weiterer Raum:</strong> bis zusätzlich 15 m² (Standard und rollstuhlgerecht)</li>
+            </ul>
+            <p class="hint" style="margin-top: 6px">
+              <strong>Was zählt als Aufenthaltsraum?</strong><br />Ein Aufenthaltsraum ist ein Raum ab 10 m², der
+              als Wohn- und Rückzugsraum für maximal 2 Personen dient. Dazu zählt ein abgeschlossener Wohnraum
+              innerhalb einer Wohneinheit, der nach der jeweiligen Landesbauordnung als Aufenthaltsraum gilt.
+              Wohnküchen/Küchen gelten ebenfalls als Aufenthaltsraum, während Sanitärräume nicht dazu zählen.
+            </p>
           </details>
 
           <div class="table-wrap">
@@ -1004,17 +1280,8 @@
 
         <div id="step-5" class="step">
           <div class="step5-head">
-            <h2>Ergebnis & Kredit-Indikation</h2>
-            <div id="resultBadge" class="badge unklar">Gesamtstatus: unklar</div>
+            <h2>Ergebnis</h2>
           </div>
-
-          <details class="status-details">
-            <summary>
-              <span class="status-details-label">Prüfdetails</span>
-              <span class="status-details-hint">Anzeigen <span class="status-details-arrow">▼</span></span>
-            </summary>
-            <ul id="issues" class="issues"></ul>
-          </details>
 
           <div class="result-panel">
             <div class="result-kv">
@@ -1032,10 +1299,6 @@
             <div class="overview-row">
               <span>Anzahl Wohneinheiten</span>
               <span id="overviewWohneinheiten" class="overview-value">-</span>
-            </div>
-            <div class="overview-row">
-              <span>Objektstandort (PLZ)</span>
-              <span id="overviewPlz" class="overview-value">-</span>
             </div>
             <div class="overview-row">
               <span>Effizienzhaus 55</span>
@@ -1191,6 +1454,7 @@
       const backBtn = document.getElementById("backBtn");
       const nextBtn = document.getElementById("nextBtn");
       const projektartSelect = document.getElementById("projektart");
+      const projektartTiles = document.querySelectorAll("[data-projektart-tile]");
       const plzInput = document.getElementById("plz");
       const eh55Select = document.getElementById("eh55");
       const wohneinheitenInput = document.getElementById("wohneinheiten");
@@ -1198,11 +1462,25 @@
       const begonnen = document.getElementById("begonnen");
       const umschuldung = document.getElementById("umschuldung");
       const parallel = document.getElementById("parallel");
+      const koCards = document.querySelectorAll("[data-ko-toggle]");
       const heater = document.getElementById("waermeerzeuger");
+      const heaterTiles = document.querySelectorAll("[data-heater-tile]");
       const laufzeitSelect = document.getElementById("laufzeit");
       const tilgungsfreiSelect = document.getElementById("tilgungsfrei");
       const zinssatzInput = document.getElementById("zinssatz");
       const createPdfBtn = document.getElementById("createPdfBtn");
+
+      if (projektartTiles.length > 0) {
+        projektartTiles.forEach((tile) => {
+          tile.addEventListener("click", () => {
+            const value = tile.getAttribute("data-projektart-tile");
+            projektartSelect.value = value;
+            projektartTiles.forEach((entry) => {
+              entry.classList.toggle("selected", entry === tile);
+            });
+          });
+        });
+      }
 
       function formatPercent(value) {
         return `${Number(value).toFixed(2).replace(".", ",")} %`;
@@ -1279,36 +1557,57 @@
         if (zinsStand) zinsStand.textContent = standText;
       }
 
-      function setRatesFromPayload(payload) {
-        const byTerm = payload?.rates?.byTerm || payload?.byTerm;
-        const r10 = Number(byTerm?.[10] ?? byTerm?.["10"]);
-        const r25 = Number(byTerm?.[25] ?? byTerm?.["25"]);
-        const r35 = Number(byTerm?.[35] ?? byTerm?.["35"]);
-        const kfwCompare = Number(payload?.rates?.kfw296CompareRate ?? payload?.kfw296CompareRate);
-        const market = Number(payload?.rates?.marketRate ?? payload?.marketRate);
+      function formatStandFromIso(iso) {
+        const date = new Date(iso);
+        if (Number.isNaN(date.getTime())) return null;
+        return new Intl.DateTimeFormat("de-DE", { month: "long", year: "numeric" }).format(date);
+      }
 
-        if ([r10, r25, r35, kfwCompare, market].some((value) => !Number.isFinite(value))) {
+      function setRatesFromNewPayloads(kfwPayload, interhypPayload) {
+        const ratesByVariant = new Map(
+          (kfwPayload?.rates || []).map((entry) => [entry?.variant, Number(entry?.effectiveRatePercent)])
+        );
+
+        const r10 = ratesByVariant.get("10/2/10");
+        const r25 = ratesByVariant.get("25/3/10");
+        const r35 = ratesByVariant.get("35/5/10");
+        const market = Number(interhypPayload?.effectiveRatePercent);
+
+        if ([r10, r25, r35, market].some((value) => !Number.isFinite(value))) {
           return false;
         }
 
         RATE_BY_TERM = { 10: r10, 25: r25, 35: r35 };
-        KFW296_COMPARE_RATE = kfwCompare;
+        KFW296_COMPARE_RATE = r10;
         MARKET_RATE = market;
-        CURRENT_STAND = payload?.displayStand || payload?.stand || CURRENT_STAND;
+
+        const standCandidate =
+          formatStandFromIso(kfwPayload?.updatedAt) || formatStandFromIso(interhypPayload?.updatedAt);
+        if (standCandidate) {
+          CURRENT_STAND = standCandidate;
+        }
+
         applyStandText();
         return true;
       }
 
       async function loadRates() {
         try {
-          const response = await fetch("./rates.json", { cache: "no-store" });
-          if (!response.ok) {
-            applyStandText();
-            return;
+          const [kfwResponse, interhypResponse] = await Promise.all([
+            fetch("./data/kfw/296.json", { cache: "no-store" }),
+            fetch("./data/market/interhyp_10y_ltv_gt90.json", { cache: "no-store" }),
+          ]);
+
+          if (kfwResponse.ok && interhypResponse.ok) {
+            const [kfwPayload, interhypPayload] = await Promise.all([
+              kfwResponse.json(),
+              interhypResponse.json(),
+            ]);
+            const appliedNew = setRatesFromNewPayloads(kfwPayload, interhypPayload);
+            if (appliedNew) return;
           }
-          const payload = await response.json();
-          const applied = setRatesFromPayload(payload);
-          if (!applied) applyStandText();
+
+          applyStandText();
         } catch (error) {
           applyStandText();
           console.warn("Raten konnten nicht geladen werden, es werden Standardwerte verwendet.", error);
@@ -1592,6 +1891,7 @@
 
       function renderUnitChecks() {
         const units = readUnits();
+        let okCount = 0;
 
         units.forEach((unit) => {
           const required = requiredRoomsForArea(unit.area);
@@ -1601,13 +1901,15 @@
           if (!node) return;
 
           if (missing === 0) {
-            node.textContent = "Erfüllt";
+            okCount += 1;
+            node.innerHTML = `<span class="status-pill ok">✅ Erfüllt</span>`;
             node.className = "status-ok";
           } else {
-            node.textContent = `Nicht erfüllt. Es fehlen ${missing} Aufenthaltsraum${missing > 1 ? "e" : ""}.`;
+            node.innerHTML = `<span class="status-pill bad">⚠️ Es fehlen ${missing} Raum${missing > 1 ? "e" : ""}</span>`;
             node.className = "status-bad";
           }
         });
+
       }
 
       function showError(message) {
@@ -1621,7 +1923,6 @@
 
         if (state.step === 1) {
           const projektart = document.getElementById("projektart").value;
-          const plz = document.getElementById("plz").value.trim();
           const count = Number(wohneinheitenInput.value);
 
           if (!projektart) {
@@ -1630,10 +1931,6 @@
           }
           if (!Number.isInteger(count) || count < 1 || count > 200) {
             showError("Anzahl Wohneinheiten: Bitte eine ganze Zahl zwischen 1 und 200 eingeben.");
-            return false;
-          }
-          if (!/^\d{5}$/.test(plz)) {
-            showError("Bitte eine deutsche PLZ mit 5 Ziffern eingeben.");
             return false;
           }
         }
@@ -1666,10 +1963,6 @@
       function evaluate() {
         const issues = [];
         const units = readUnits();
-
-        const eh55 = document.getElementById("eh55").value;
-        const lca = document.getElementById("lca").value;
-        const lcc = document.getElementById("lcc").value;
 
         if (begonnen.checked) {
           pushIssue(
@@ -1708,66 +2001,6 @@
             "Wärmeerzeuger unzulässig",
             "Fossile Wärmeerzeuger oder Biomasse sind ausgeschlossen.",
             "Auf zulässigen Wärmeerzeuger umstellen (z. B. Wärmepumpe oder Fernwärme).",
-          );
-        }
-
-        if (eh55 === "nein") {
-          pushIssue(
-            issues,
-            "ko",
-            "EH55 nicht erreicht",
-            "Die technischen Mindestanforderungen verlangen den Standard Effizienzhaus 55.",
-            "Energieplanung anpassen und EH55-Nachweis erstellen.",
-          );
-        }
-
-        if (lca === "nein") {
-          pushIssue(
-            issues,
-            "ko",
-            "Klimawirkung nicht im erlaubten Bereich",
-            "Der Nachweis zur Klimawirkung ist nicht erfüllt.",
-            "Mit Energieberater/Planungsteam nacharbeiten und Nachweis aktualisieren.",
-          );
-        }
-
-        if (lcc === "nein") {
-          pushIssue(
-            issues,
-            "ko",
-            "Nachweis zu Lebenszyklus-Kosten nicht erfüllt",
-            "Die Berechnung der Lebenszyklus-Kosten mit dem KNN-Tool erfüllt die Vorgaben nicht.",
-            "Bitte im KNN-Tool nachrechnen und Nachweis ergänzen.",
-          );
-        }
-
-        if (eh55 === "unklar") {
-          pushIssue(
-            issues,
-            "warn",
-            "EH55 noch unklar",
-            "Ob EH55 erreicht wird, ist aktuell nicht bestätigt.",
-            "Bitte durch EEE bestätigen lassen.",
-          );
-        }
-
-        if (lca === "unklar") {
-          pushIssue(
-            issues,
-            "warn",
-            "Klimawirkung noch unklar",
-            "Der Nachweis zur Klimawirkung liegt noch nicht eindeutig vor.",
-            "Bitte durch Energieberater/EEE prüfen.",
-          );
-        }
-
-        if (lcc === "unklar") {
-          pushIssue(
-            issues,
-            "warn",
-            "Lebenszyklus-Kosten noch unklar",
-            "Der Nachweis zu den Lebenszyklus-Kosten fehlt oder ist unvollständig.",
-            "Bitte im KNN-Tool berechnen und bestätigen lassen.",
           );
         }
 
@@ -1810,15 +2043,10 @@
       function renderResult() {
         const result = evaluate();
 
-        const badge = document.getElementById("resultBadge");
-        badge.className = `badge ${result.status}`;
-        badge.textContent = `Gesamtstatus: ${result.status.replace("_", " ")}`;
-
         document.getElementById("overviewProjektart").textContent = getSelectedLabel(projektartSelect);
         document.getElementById("overviewWohneinheiten").textContent = String(
           Math.max(1, Math.min(200, Number(wohneinheitenInput.value) || 1)),
         );
-        document.getElementById("overviewPlz").textContent = plzInput.value.trim() || "-";
         document.getElementById("overviewEh55").textContent = getSelectedLabel(eh55Select);
         document.getElementById("overviewWaerme").textContent = getSelectedLabel(heater);
 
@@ -1830,22 +2058,6 @@
           .toFixed(2)
           .replace(".", ",")} % günstigerer Zins!`;
         document.getElementById("compareSaving").textContent = `Bei ${formatEuro(result.maxKreditsumme)} Darlehenssumme sparen Sie über die Laufzeit mehrere Tausend Euro an Zinsen.`;
-
-        const issuesNode = document.getElementById("issues");
-        issuesNode.innerHTML = "";
-
-        if (result.issues.length === 0) {
-          const li = document.createElement("li");
-          li.textContent = "Keine offenen Punkte.";
-          issuesNode.appendChild(li);
-          return;
-        }
-
-        result.issues.forEach((issue) => {
-          const li = document.createElement("li");
-          li.innerHTML = `<strong>${issue.title}</strong><br>${issue.detail}<br><span class="muted">Was muss ich ändern? ${issue.action}</span>`;
-          issuesNode.appendChild(li);
-        });
       }
 
       function renderGraceYears() {
@@ -1877,8 +2089,23 @@
         const heaterKo = document.getElementById("heaterKo");
         heaterKo.style.display = heater.value === "fossil" || heater.value === "biomasse" ? "block" : "none";
 
-        const eh55Ko = document.getElementById("eh55Ko");
-        eh55Ko.style.display = eh55Select.value === "nein" ? "block" : "none";
+        syncKoCards();
+        syncHeaterTiles();
+      }
+
+      function syncHeaterTiles() {
+        heaterTiles.forEach((tile) => {
+          const value = tile.getAttribute("data-heater-tile");
+          tile.classList.toggle("selected", value === heater.value);
+        });
+      }
+
+      function syncKoCards() {
+        koCards.forEach((card) => {
+          const inputId = card.getAttribute("data-ko-toggle");
+          const input = document.getElementById(inputId);
+          card.classList.toggle("selected", Boolean(input?.checked));
+        });
       }
 
       function begonnenOrKo() {
@@ -1904,6 +2131,37 @@
       }
 
       wohneinheitenInput.addEventListener("change", renderUnits);
+
+      koCards.forEach((card) => {
+        card.addEventListener("click", () => {
+          const inputId = card.getAttribute("data-ko-toggle");
+          const targetInput = document.getElementById(inputId);
+          if (!targetInput) return;
+
+          if (inputId === "noneApplies") {
+            noneApplies.checked = true;
+            begonnen.checked = false;
+            umschuldung.checked = false;
+            parallel.checked = false;
+          } else {
+            targetInput.checked = !targetInput.checked;
+            if (targetInput.checked) {
+              noneApplies.checked = false;
+            }
+          }
+
+          updateKoHints();
+        });
+      });
+
+      heaterTiles.forEach((tile) => {
+        tile.addEventListener("click", () => {
+          const value = tile.getAttribute("data-heater-tile");
+          heater.value = value;
+          updateKoHints();
+        });
+      });
+
       begonnen.addEventListener("change", updateKoHints);
       umschuldung.addEventListener("change", updateKoHints);
       parallel.addEventListener("change", updateKoHints);
@@ -1919,7 +2177,6 @@
       });
 
       heater.addEventListener("change", updateKoHints);
-      eh55Select.addEventListener("change", updateKoHints);
 
       laufzeitSelect.addEventListener("change", () => {
         const term = Number(laufzeitSelect.value);
@@ -1947,6 +2204,7 @@
       zinssatzInput.value = RATE_BY_TERM[25];
       renderGraceYears();
       syncKfwRateTable();
+      syncHeaterTiles();
       updateKoHints();
       showStep();
 
