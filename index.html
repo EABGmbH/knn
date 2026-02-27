@@ -1384,10 +1384,9 @@
               <div class="cta-icon">🔥</div>
               <p class="cta-text">Jetzt Energieberatung anfragen und direkt 10 % Nachlass sichern.</p>
               <a
+                id="offerLinkBtn"
                 class="cta-button"
-                href="https://energy-advice-bavaria.de/kontakt/?tab=offer-tab-pane#section-79"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="./angebot.html"
                 >Unverbindliches Angebot anfordern</a
               >
             </div>
@@ -1428,6 +1427,7 @@
       </section>
     </main>
 
+    <script src="./assets/kfw296-pdf.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
       const TOTAL_STEPS = 5;
@@ -1469,6 +1469,7 @@
       const tilgungsfreiSelect = document.getElementById("tilgungsfrei");
       const zinssatzInput = document.getElementById("zinssatz");
       const createPdfBtn = document.getElementById("createPdfBtn");
+      const offerLinkBtn = document.getElementById("offerLinkBtn");
 
       if (projektartTiles.length > 0) {
         projektartTiles.forEach((tile) => {
@@ -1526,22 +1527,24 @@
         const logoBoxY = 4.5;
         const logoBoxW = 22;
         const logoBoxH = 13;
-        const logoProps = doc.getImageProperties(logo);
-        const logoRatio = logoProps.width / logoProps.height;
-        const logoBoxRatio = logoBoxW / logoBoxH;
+        if (logo) {
+          const logoProps = doc.getImageProperties(logo);
+          const logoRatio = logoProps.width / logoProps.height;
+          const logoBoxRatio = logoBoxW / logoBoxH;
 
-        let drawLogoW = logoBoxW;
-        let drawLogoH = logoBoxH;
+          let drawLogoW = logoBoxW;
+          let drawLogoH = logoBoxH;
 
-        if (logoRatio > logoBoxRatio) {
-          drawLogoH = logoBoxW / logoRatio;
-        } else {
-          drawLogoW = logoBoxH * logoRatio;
+          if (logoRatio > logoBoxRatio) {
+            drawLogoH = logoBoxW / logoRatio;
+          } else {
+            drawLogoW = logoBoxH * logoRatio;
+          }
+
+          const drawLogoX = logoBoxX + (logoBoxW - drawLogoW) / 2;
+          const drawLogoY = logoBoxY + (logoBoxH - drawLogoH) / 2;
+          doc.addImage(logo, "PNG", drawLogoX, drawLogoY, drawLogoW, drawLogoH);
         }
-
-        const drawLogoX = logoBoxX + (logoBoxW - drawLogoW) / 2;
-        const drawLogoY = logoBoxY + (logoBoxH - drawLogoH) / 2;
-        doc.addImage(logo, "PNG", drawLogoX, drawLogoY, drawLogoW, drawLogoH);
 
         doc.setTextColor(255, 255, 255);
         doc.setFont("helvetica", "bold");
@@ -1628,153 +1631,94 @@
         });
       }
 
+      async function loadOptionalImageAsDataUrl(path) {
+        try {
+          return await loadImageAsDataUrl(path);
+        } catch (error) {
+          console.warn(`Optionales Bild fehlt oder konnte nicht geladen werden: ${path}`, error);
+          return null;
+        }
+      }
+
       async function createResultPdf() {
         try {
-          if (!window.jspdf?.jsPDF) {
+          if (!window.Kfw296Pdf?.createPdfFileFromPayload) {
             alert("PDF-Bibliothek konnte nicht geladen werden.");
             return;
           }
 
-          const { jsPDF } = window.jspdf;
-          const result = evaluate();
-          const count = Math.max(1, Math.min(200, Number(wohneinheitenInput.value) || 1));
-
-          const monthlyKfw = calculateMonthlyInterestCost(result.maxKreditsumme, KFW296_COMPARE_RATE);
-          const monthlyMarket = calculateMonthlyInterestCost(result.maxKreditsumme, MARKET_RATE);
-          const monthlySaving = Math.max(0, monthlyMarket - monthlyKfw);
-          const yearlySaving = monthlySaving * 12;
-
-          const [titlePage, logo, qr, kfwAblauf] = await Promise.all([
-            loadImageAsDataUrl("titelblatt.png"),
-            loadImageAsDataUrl("logo.png"),
-            loadImageAsDataUrl("homepagestatistik.png"),
-            loadImageAsDataUrl("kfwablauf.png"),
-          ]);
-
-          const doc = new jsPDF({ unit: "mm", format: "a4", compress: true });
-
-          doc.addImage(titlePage, "PNG", 0, 0, 210, 297);
-          doc.addPage();
-
-          drawPdfHeader(doc, logo, "KfW - 296 KNN im Niedrigpreissegment - Ergebis");
-
-          doc.setTextColor(17, 24, 39);
-          doc.setFont("helvetica", "bold");
-          doc.setFontSize(10.2);
-          doc.text("Projektdaten:", 20, 34);
-
-          const projektartLabel = getSelectedLabel(projektartSelect);
-          const eh55Label = getSelectedLabel(eh55Select);
-          const heaterLabel = getSelectedLabel(heater);
-
-          doc.setFont("helvetica", "normal");
-          doc.setFontSize(8.8);
-          doc.text(`Projektart: ${projektartLabel}`, 20, 42);
-          doc.text(`Anzahl Wohneinheiten: ${count}`, 20, 48);
-          doc.text(`Objektstandort (PLZ): ${plzInput.value.trim() || "-"}`, 20, 54);
-          doc.text(`EH55-Status: ${eh55Label}`, 20, 60);
-          doc.text(`Wärmeerzeuger: ${heaterLabel}`, 20, 66);
-          doc.text(`Kredithöhe: ${formatEuroWithCode(result.maxKreditsumme)}`, 20, 72);
-
-          doc.setDrawColor(190, 198, 203);
-          doc.setFillColor(247, 248, 250);
-          doc.rect(15, 82, 180, 103, "FD");
-
-          doc.setTextColor(17, 24, 39);
-          doc.setFont("helvetica", "bold");
-          doc.setFontSize(11);
-          doc.text("Finanzierungsübersicht", 20, 92);
-
-          addPdfKvLine(doc, 25, 186, 102, "Kreditbetrag:", formatEuroWithCode(result.maxKreditsumme));
-          addPdfKvLine(doc, 25, 186, 109, "Max. möglicher KfW-Kredit:", formatEuroWithCode(result.maxKreditsumme));
-
-          doc.setFont("helvetica", "bold");
-          doc.setFontSize(9.2);
-          doc.text("Zinssätze (10 Jahre Zinsbindung):", 25, 120);
-          doc.setTextColor(185, 28, 28);
-          doc.setFont("helvetica", "normal");
-          doc.setFontSize(7.5);
-          doc.text("Hinweis: Längere Laufzeiten (11-35 Jahre) haben höhere KfW-Zinssätze.", 25, 126);
-
-          addPdfKvLine(doc, 25, 186, 133, "KfW-Förderkredit EH40:", `${formatTwoDecimals(KFW296_COMPARE_RATE)} % p.a.`);
-          addPdfKvLine(doc, 25, 186, 140, "Marktüblicher Zins:", `${formatTwoDecimals(MARKET_RATE)} % p.a.`);
-
-          doc.setTextColor(17, 24, 39);
-          doc.setFont("helvetica", "bold");
-          doc.setFontSize(9.2);
-          doc.text("Monatliche Zinsbelastung (ohne Tilgung):", 25, 151);
-
-          addPdfKvLine(doc, 25, 186, 158, "Mit KfW-Förderung:", formatEuroWithCode(monthlyKfw));
-          addPdfKvLine(doc, 25, 186, 165, "Bei Marktkonditionen:", formatEuroWithCode(monthlyMarket));
-
-          doc.setFillColor(76, 104, 91);
-          doc.rect(20, 170, 170, 10, "F");
-          doc.setTextColor(255, 255, 255);
-          addPdfKvLine(doc, 25, 186, 176.8, "Monatlicher Zinsvorteil:", formatEuroWithCode(monthlySaving), [255, 255, 255]);
-
-          doc.setFillColor(76, 104, 91);
-          doc.rect(15, 191, 180, 21, "F");
-          doc.setTextColor(255, 255, 255);
-          doc.setFont("helvetica", "bold");
-          doc.setFontSize(10.5);
-          doc.text("Ihr Zinsvorteil gegenüber Marktkredit (1 Jahr):", 105, 200, { align: "center" });
-          doc.setFontSize(15);
-          doc.text(formatEuroWithCode(yearlySaving), 105, 207.8, { align: "center" });
-
-          doc.setTextColor(17, 24, 39);
-          doc.setFont("helvetica", "bold");
-          doc.setFontSize(8.4);
-          doc.text("Über diesen Vergleich:", 15, 228);
-          doc.setFont("helvetica", "normal");
-          doc.setFontSize(7.3);
-          doc.text(
-            "Dieser Bericht zeigt den Zinsvorteil des KfW-Programms 296 im Vergleich zu marktüblichen Konditionen.",
-            15,
-            233,
-            { maxWidth: 180 },
-          );
-          doc.setFont("helvetica", "bold");
-          doc.text("Hinweis zur Tilgung:", 15, 242.5);
-          doc.setFont("helvetica", "normal");
-          doc.text(
-            "Der Vergleich zeigt reine Zinskosten auf Basis der Darlehenssumme (ohne Tilgung).",
-            15,
-            247,
-            { maxWidth: 180 },
-          );
-
-          doc.addImage(qr, "PNG", 95, 275, 20, 20);
-
-          doc.addPage();
-          drawPdfHeader(doc, logo, "KfW - 296 KNN im Niedrigpreissegment - Ablauf");
-          const flowBoxX = 10;
-          const flowBoxY = 28;
-          const flowBoxW = 190;
-          const flowBoxH = 240;
-          const flowProps = doc.getImageProperties(kfwAblauf);
-          const flowRatio = flowProps.width / flowProps.height;
-          const flowBoxRatio = flowBoxW / flowBoxH;
-
-          let flowDrawW = flowBoxW;
-          let flowDrawH = flowBoxH;
-
-          if (flowRatio > flowBoxRatio) {
-            flowDrawH = flowBoxW / flowRatio;
-          } else {
-            flowDrawW = flowBoxH * flowRatio;
-          }
-
-          const flowDrawX = flowBoxX + (flowBoxW - flowDrawW) / 2;
-          const flowDrawY = flowBoxY + (flowBoxH - flowDrawH) / 2;
-          doc.addImage(kfwAblauf, "PNG", flowDrawX, flowDrawY, flowDrawW, flowDrawH);
-          doc.link(51.5, 105.79, 54.8, 6.35, { url: "https://www.energy-advice-bavaria.de" });
-          doc.addImage(qr, "PNG", 95, 275, 20, 20);
-
-          doc.save("kfw296-ergebnis.pdf");
+          const payload = buildPdfPayloadFromState();
+          await window.Kfw296Pdf.createPdfFileFromPayload(payload, {
+            save: true,
+            fileName: "kfw296-ergebnis.pdf",
+          });
         } catch (error) {
           alert("PDF konnte nicht erstellt werden. Bitte Seite neu laden und erneut versuchen.");
           console.error(error);
         }
+      }
+
+      function buildPdfPayloadFromState() {
+        const result = evaluate();
+        const count = Math.max(1, Math.min(200, Number(wohneinheitenInput.value) || 1));
+
+        return {
+          projektartLabel: getSelectedLabel(projektartSelect),
+          count,
+          plz: plzInput.value.trim() || "-",
+          eh55Label: getSelectedLabel(eh55Select),
+          heaterLabel: getSelectedLabel(heater),
+          maxKreditsumme: result.maxKreditsumme,
+          kfwRate: KFW296_COMPARE_RATE,
+          marketRate: MARKET_RATE,
+        };
+      }
+
+      function buildOfferPayload() {
+        const units = readUnits();
+        const result = evaluate();
+        const term = Number(laufzeitSelect.value);
+        const grace = Number(tilgungsfreiSelect.value);
+        const rate = Number(zinssatzInput.value);
+
+        return {
+          createdAt: new Date().toISOString(),
+          stand: CURRENT_STAND,
+          formData: {
+            projektartValue: projektartSelect.value,
+            projektartLabel: getSelectedLabel(projektartSelect),
+            plz: plzInput.value.trim(),
+            eh55Value: eh55Select.value,
+            eh55Label: getSelectedLabel(eh55Select),
+            wohneinheiten: Math.max(1, Math.min(200, Number(wohneinheitenInput.value) || 1)),
+            heaterValue: heater.value,
+            heaterLabel: getSelectedLabel(heater),
+            ko: {
+              noneApplies: Boolean(noneApplies.checked),
+              begonnen: Boolean(begonnen.checked),
+              umschuldung: Boolean(umschuldung.checked),
+              parallel: Boolean(parallel.checked),
+            },
+            laufzeit: term,
+            tilgungsfrei: grace,
+            zinssatz: Number.isFinite(rate) ? rate : null,
+            units,
+          },
+          validationResult: {
+            status: result.status,
+            issues: result.issues,
+            maxKreditsumme: result.maxKreditsumme,
+          },
+          financialResult: {
+            monatlicheRate: Number.isFinite(result.monatlicheRate) ? result.monatlicheRate : null,
+          },
+          zinssaetze: {
+            kfw296: KFW296_COMPARE_RATE,
+            market10yGt90: MARKET_RATE,
+            byTerm: RATE_BY_TERM,
+          },
+          pdfPayload: buildPdfPayloadFromState(),
+        };
       }
 
       function getSelectedLabel(selectNode) {
@@ -2195,6 +2139,16 @@
       });
 
       createPdfBtn.addEventListener("click", createResultPdf);
+
+      if (offerLinkBtn) {
+        offerLinkBtn.addEventListener("click", () => {
+          try {
+            localStorage.setItem("angebotRechnerPayload", JSON.stringify(buildOfferPayload()));
+          } catch (storageError) {
+            console.warn("Rechnerdaten konnten nicht gespeichert werden.", storageError);
+          }
+        });
+      }
 
       backBtn.addEventListener("click", back);
       nextBtn.addEventListener("click", next);

@@ -1,6 +1,6 @@
 # KfW-296 Förderrechner (KNN-WG)
 
-Statische HTML-Version für einen einfachen Vorab-Check zur KfW 296 Förderung (ohne Upload, ohne Backend).
+Statische HTML-Version für einen einfachen Vorab-Check zur KfW 296 Förderung mit optionalem Angebotsformular.
 
 ## Schnellstart (statisch)
 
@@ -32,6 +32,19 @@ python -m http.server 4173
 ## Datei
 
 - Einstieg: `index.html`
+- Angebotsformular: `angebot.html`
+- Mail-Endpunkt (IONOS/PHP): `api/offer-request.php`
+
+## Angebotsformular + E-Mail-Versand
+
+- Auf Schritt 5 führt **„Unverbindliches Angebot anfordern“** auf `angebot.html`.
+- Das Formular übernimmt die Rechnerdaten aus `localStorage` (`angebotRechnerPayload`).
+- Beim Absenden wird die **gleiche PDF** erzeugt wie bei „Kostenloses PDF erstellen“.
+- E-Mail-Versand über `api/offer-request.php`:
+  - Bestätigung an den Kunden (mit PDF-Anhang)
+  - Eingangsmail an `anfrage@energy-advice-bavaria.de` (mit Kundendaten + Rechnerdaten + PDF)
+
+Hinweis: Der PHP-Endpunkt nutzt die serverseitige `mail()`-Funktion. Auf IONOS muss Mailversand für PHP aktiviert sein.
 
 ## Automatische Zins-Updates (Scraping)
 
@@ -68,7 +81,6 @@ Benötigte GitHub Repository-Secrets:
 - `IONOS_FTP_SERVER` (z. B. `home123456.1and1-data.host`)
 - `IONOS_FTP_USERNAME`
 - `IONOS_FTP_PASSWORD`
-- `IONOS_FTP_SERVER_DIR` (z. B. `/` oder `/htdocs/`)
 
 ## Neue TypeScript Scraper (GitHub Actions)
 

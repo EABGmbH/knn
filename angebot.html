@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unverbindliches Angebot anfordern</title>
+    <link rel="stylesheet" href="./angebot.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="./assets/kfw296-pdf.js"></script>
+  </head>
+  <body>
+    <div class="offer-wrap">
+      <a class="back-link" href="./index.html">← Zurück zum Rechner</a>
+      <section class="offer-card">
+        <h1>Unverbindliches Angebot anfordern</h1>
+        <p class="subtitle">Nach Versand erhalten Sie eine Bestätigung per E-Mail inklusive identischer Ergebnis-PDF.</p>
+
+        <form id="offerForm" novalidate>
+          <div class="grid">
+            <label>Vorname *
+              <input id="vorname" required />
+            </label>
+            <label>Nachname *
+              <input id="nachname" required />
+            </label>
+            <label>E-Mail *
+              <input id="email" type="email" required />
+            </label>
+            <label>Handy *
+              <input id="handy" required />
+            </label>
+            <label class="field-full">Firma
+              <input id="firma" />
+            </label>
+            <label>Straße *
+              <input id="strasse" required />
+            </label>
+            <label>Hausnummer *
+              <input id="hausnummer" required />
+            </label>
+            <label>PLZ *
+              <input id="plz" required />
+            </label>
+            <label>Ort *
+              <input id="ort" required />
+            </label>
+            <label class="field-full">Notizen
+              <textarea id="notizen" rows="4" placeholder="Optional"></textarea>
+            </label>
+          </div>
+
+          <div class="summary">
+            <h2>Rechner-Zusammenfassung</h2>
+            <pre id="calcSummary">Lade Daten ...</pre>
+          </div>
+
+          <label class="consent">
+            <input id="bestaetigung" type="checkbox" required />
+            <span>Hiermit bestätige ich die Richtigkeit und Vollständigkeit der Angaben.</span>
+          </label>
+
+          <button id="submitBtn" type="submit">Angebot anfordern</button>
+          <div id="status" class="status" aria-live="polite"></div>
+        </form>
+      </section>
+    </div>
+
+    <script>
+      const statusBox = document.getElementById("status");
+      const submitBtn = document.getElementById("submitBtn");
+      const summaryNode = document.getElementById("calcSummary");
+      const offerForm = document.getElementById("offerForm");
+
+      function showStatus(message, success) {
+        statusBox.textContent = message;
+        statusBox.className = success ? "status success" : "status error";
+      }
+
+      function getCalculatorPayload() {
+        try {
+          const raw = localStorage.getItem("angebotRechnerPayload");
+          if (!raw) return null;
+          const parsed = JSON.parse(raw);
+          if (!parsed || typeof parsed !== "object") return null;
+          return parsed;
+        } catch {
+          return null;
+        }
+      }
+
+      function safe(value) {
+        return value == null || value === "" ? "-" : String(value);
+      }
+
+      const calcPayload = getCalculatorPayload();
+      if (calcPayload) {
+        const lines = [];
+        lines.push(`Projektart: ${safe(calcPayload?.formData?.projektartLabel)}`);
+        lines.push(`PLZ: ${safe(calcPayload?.formData?.plz)}`);
+        lines.push(`Wohneinheiten: ${safe(calcPayload?.formData?.wohneinheiten)}`);
+        lines.push(`EH55-Status: ${safe(calcPayload?.formData?.eh55Label)}`);
+        lines.push(`Wärmeerzeuger: ${safe(calcPayload?.formData?.heaterLabel)}`);
+        lines.push(`Max. Kreditsumme: ${safe(calcPayload?.validationResult?.maxKreditsumme)}`);
+        lines.push(`KfW-Zins: ${safe(calcPayload?.zinssaetze?.kfw296)} %`);
+        lines.push(`Markt-Zins: ${safe(calcPayload?.zinssaetze?.market10yGt90)} %`);
+        lines.push(`Stand: ${safe(calcPayload?.stand)}`);
+        summaryNode.textContent = lines.join("\n");
+      } else {
+        summaryNode.textContent = "Keine Rechnerdaten gefunden. Bitte zuerst den Rechner bis Schritt 5 ausfüllen.";
+      }
+
+      function collectOfferData() {
+        return {
+          vorname: document.getElementById("vorname").value.trim(),
+          nachname: document.getElementById("nachname").value.trim(),
+          email: document.getElementById("email").value.trim(),
+          handy: document.getElementById("handy").value.trim(),
+          firma: document.getElementById("firma").value.trim(),
+          strasse: document.getElementById("strasse").value.trim(),
+          hausnummer: document.getElementById("hausnummer").value.trim(),
+          plz: document.getElementById("plz").value.trim(),
+          ort: document.getElementById("ort").value.trim(),
+          notizen: document.getElementById("notizen").value.trim(),
+        };
+      }
+
+      function isValidEmail(value) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+      }
+
+      offerForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        if (!calcPayload?.pdfPayload) {
+          showStatus("Rechnerdaten fehlen. Bitte zuerst im Rechner auf Schritt 5 gehen und erneut öffnen.", false);
+          return;
+        }
+
+        const confirmation = document.getElementById("bestaetigung");
+        if (!confirmation.checked) {
+          showStatus("Bitte bestätigen Sie die Richtigkeit Ihrer Angaben.", false);
+          return;
+        }
+
+        const offer = collectOfferData();
+        if (!offer.vorname || !offer.nachname || !offer.email || !offer.handy || !offer.strasse || !offer.hausnummer || !offer.plz || !offer.ort) {
+          showStatus("Bitte alle Pflichtfelder ausfüllen.", false);
+          return;
+        }
+        if (!isValidEmail(offer.email)) {
+          showStatus("Bitte eine gültige E-Mail-Adresse eingeben.", false);
+          return;
+        }
+
+        submitBtn.disabled = true;
+        showStatus("Anfrage wird gesendet ...", true);
+
+        try {
+          const pdfFile = await window.Kfw296Pdf.createPdfFileFromPayload(calcPayload.pdfPayload, {
+            save: false,
+            fileName: "kfw296-ergebnis.pdf",
+          });
+
+          const formData = new FormData();
+          formData.append("offer", JSON.stringify(offer));
+          formData.append("calculator", JSON.stringify(calcPayload));
+          formData.append("rechnerPdf", pdfFile, pdfFile.name);
+
+          const response = await fetch("./api/offer-request.php", {
+            method: "POST",
+            body: formData,
+          });
+
+          let result;
+          try {
+            result = await response.json();
+          } catch {
+            result = { ok: false, message: "Ungültige Serverantwort." };
+          }
+
+          if (!response.ok || !result.ok) {
+            throw new Error(result.message || "Versand fehlgeschlagen.");
+          }
+
+          offerForm.reset();
+          showStatus("Vielen Dank! Ihre Anfrage wurde gesendet. Die Bestätigung ist unterwegs.", true);
+        } catch (error) {
+          showStatus(`Versand fehlgeschlagen: ${error.message || "Unbekannter Fehler"}`, false);
+        } finally {
+          submitBtn.disabled = false;
+        }
+      });
+    </script>
+  </body>
+</html>
