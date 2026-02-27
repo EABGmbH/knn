@@ -1,0 +1,41 @@
+name: Update Interhyp Rate
+
+on:
+  schedule:
+    - cron: "20 4 * * *"
+    - cron: "20 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-interhyp:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Fetch Interhyp rate
+        run: npm run market:interhyp
+
+      - name: Commit and push if changed
+        run: |
+          if git diff --quiet -- data/market/interhyp_10y_ltv_gt90.json; then
+            echo "No changes"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/market/interhyp_10y_ltv_gt90.json
+          git commit -m "chore: update interhyp rate"
+          git push
