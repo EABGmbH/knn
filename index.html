@@ -1596,9 +1596,10 @@
 
       async function loadRates() {
         try {
+          const cacheBuster = Date.now();
           const [kfwResponse, interhypResponse] = await Promise.all([
-            fetch("./data/kfw/296.json", { cache: "no-store" }),
-            fetch("./data/market/interhyp_10y_ltv_gt90.json", { cache: "no-store" }),
+            fetch(`./data/kfw/296.json?v=${cacheBuster}`, { cache: "no-store" }),
+            fetch(`./data/market/interhyp_10y_ltv_gt90.json?v=${cacheBuster}`, { cache: "no-store" }),
           ]);
 
           if (kfwResponse.ok && interhypResponse.ok) {
