@@ -55,5 +55,5 @@ jobs:
               --exclude-glob tsconfig.json \
               --exclude-glob package.json \
               --exclude-glob package-lock.json \
-              ./ \"${SFTP_REMOTE_DIR:-.}\";
+              ./ \"${SFTP_REMOTE_DIR:-/software/knn}\";
             bye"
