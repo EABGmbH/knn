@@ -2,8 +2,8 @@ name: Update KfW 296 Rates
 
 on:
   schedule:
-    - cron: "15 4 * * *"
-    - cron: "15 5 * * *"
+    - cron: "0 7 * * *"
+    - cron: "0 8 * * *"
   workflow_dispatch:
 
 permissions:
