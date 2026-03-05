@@ -1,6 +1,6 @@
 {
   "source": "https://www.kfw-formularsammlung.de/KonditionenanzeigerINet/KonditionenAnzeiger",
-  "updatedAt": "2026-03-04T08:15:43.744Z",
+  "updatedAt": "2026-03-05T07:22:16.408Z",
   "program": 296,
   "product": "KNN Wohngebäude",
   "rates": [
@@ -11,13 +11,13 @@
     },
     {
       "variant": "25/3/10",
-      "effectiveRatePercent": 0.55,
-      "validFrom": "2026-02-18"
+      "effectiveRatePercent": 0.51,
+      "validFrom": "2026-03-02"
     },
     {
       "variant": "35/5/10",
-      "effectiveRatePercent": 0.8,
-      "validFrom": "2026-02-18"
+      "effectiveRatePercent": 0.76,
+      "validFrom": "2026-03-02"
     }
   ]
 }
