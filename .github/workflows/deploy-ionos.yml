@@ -22,7 +22,6 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y lftp
 
       - name: Deploy via SFTP
-        continue-on-error: true
         env:
           SFTP_HOST: ${{ secrets.IONOS_FTP_SERVER }}
           SFTP_USER: ${{ secrets.IONOS_FTP_USERNAME }}
@@ -39,7 +38,7 @@ jobs:
             set net:max-retries 2;
             set net:timeout 30;
             set sftp:auto-confirm yes;
-            mirror -R --delete --verbose \
+            mirror -R --delete --ignore-errors --verbose \
               --exclude '\.git' \
               --exclude-glob node_modules \
               --exclude-glob .vscode \
