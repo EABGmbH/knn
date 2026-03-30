@@ -8,188 +8,681 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="./assets/kfw296-pdf.js"></script>
   </head>
-  <body>
-    <div class="offer-wrap">
+  <body class="offer-page-body" data-offer-step="1">
+    <main class="offer-page">
       <a class="back-link" href="./index.html">← Zurück zum Rechner</a>
       <section class="offer-card">
-        <h1>Unverbindliches Angebot anfordern</h1>
-        <p class="subtitle">Nach Versand erhalten Sie eine Bestätigung per E-Mail inklusive identischer Ergebnis-PDF.</p>
+        <div class="offer-header">
+          <h1>Unverbindliches Angebot anfordern</h1>
+          <p class="subtitle">Bitte füllen Sie die Checkliste in wenigen Schritten aus. Danach können Sie alles per E-Mail senden.</p>
+        </div>
 
-        <form id="offerForm" novalidate>
-          <div class="grid">
-            <label>Vorname *
-              <input id="vorname" required />
-            </label>
-            <label>Nachname *
-              <input id="nachname" required />
-            </label>
-            <label>E-Mail *
-              <input id="email" type="email" required />
-            </label>
-            <label>Handy *
-              <input id="handy" required />
-            </label>
-            <label class="field-full">Firma
-              <input id="firma" />
-            </label>
-            <label>Straße *
-              <input id="strasse" required />
-            </label>
-            <label>Hausnummer *
-              <input id="hausnummer" required />
-            </label>
-            <label>PLZ *
-              <input id="plz" required />
-            </label>
-            <label>Ort *
-              <input id="ort" required />
-            </label>
-            <label class="field-full">Notizen
+        <div class="offer-progress" aria-label="Fortschritt">
+          <div class="offer-progress-step active" data-step="1">1. Antragsteller</div>
+          <div class="offer-progress-step" data-step="2">2. Objekt</div>
+          <div class="offer-progress-step" data-step="3">3. Abschluss</div>
+        </div>
+
+        <div id="offer-global-status" class="offer-status" aria-live="polite"></div>
+
+        <form id="angebot-form" novalidate>
+          <section class="offer-step active" data-step="1">
+            <h2>Persönliche Daten</h2>
+            <div class="offer-grid two-col">
+              <label class="offer-field-full">Firma
+                <input id="firma" />
+              </label>
+              <label>Vorname *
+                <input id="vorname" required />
+              </label>
+              <label>Nachname *
+                <input id="nachname" required />
+              </label>
+              <label>Straße *
+                <input id="strasse" required />
+              </label>
+              <label>Hausnummer *
+                <input id="hausnummer" required />
+              </label>
+              <label>PLZ *
+                <input id="plz" required />
+              </label>
+              <label>Ort *
+                <input id="ort" required />
+              </label>
+              <label>E-Mail *
+                <input id="email" type="email" required />
+              </label>
+              <label>Handy *
+                <input id="handy" required />
+              </label>
+            </div>
+
+            <fieldset class="offer-fieldset">
+              <legend>Anschrift des Investitionsstandorts identisch mit Kundenanschrift?</legend>
+              <label class="radio-inline"><input type="radio" name="adresseIdentisch" value="ja" checked /> Ja</label>
+              <label class="radio-inline"><input type="radio" name="adresseIdentisch" value="nein" /> Nein</label>
+            </fieldset>
+
+            <div id="invest-anschrift" class="conditional-panel hidden">
+              <h3>Alternativadresse des Investitionsstandorts</h3>
+              <div class="offer-grid two-col">
+                <label>Straße
+                  <input id="investStrasse" />
+                </label>
+                <label>Hausnummer
+                  <input id="investHausnummer" />
+                </label>
+                <label>PLZ
+                  <input id="investPlz" />
+                </label>
+                <label>Ort
+                  <input id="investOrt" />
+                </label>
+              </div>
+            </div>
+          </section>
+
+          <section class="offer-step" data-step="2">
+            <h2>Daten zum Investitionsstandort</h2>
+
+            <div class="question-block">
+              <h3>Ist eine Lüftungsanlage geplant?</h3>
+              <div class="toggle-group">
+                <label class="toggle-option"><input type="radio" name="lueftungGeplant" value="ja" /> <span>Ja</span></label>
+                <label class="toggle-option"><input type="radio" name="lueftungGeplant" value="nein" checked /> <span>Nein</span></label>
+              </div>
+            </div>
+
+            <div id="lueftung-daten" class="conditional-panel hidden">
+              <h3>Welche Lüftungsanlage ist geplant?</h3>
+              <div class="choice-card-grid two-col">
+                <label class="choice-card">
+                  <input id="lueftungZentral" type="checkbox" />
+                  <span class="choice-icon">🏢</span>
+                  <span class="choice-title">Zentral mit Wärmerückgewinnung</span>
+                </label>
+                <label class="choice-card">
+                  <input id="lueftungDezentral" type="checkbox" />
+                  <span class="choice-icon">🏠</span>
+                  <span class="choice-title">Dezentral mit Wärmerückgewinnung</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="question-block">
+              <h3>Ist eine PV-Anlage geplant?</h3>
+              <div class="toggle-group">
+                <label class="toggle-option"><input type="radio" name="pvGeplant" value="ja" /> <span>Ja</span></label>
+                <label class="toggle-option"><input type="radio" name="pvGeplant" value="nein" checked /> <span>Nein</span></label>
+              </div>
+            </div>
+
+            <div id="pv-daten" class="conditional-panel hidden">
+              <div class="input-card">
+                <label>Falls ja, wieviel kWp sind geplant?
+                  <input id="pvKwp" type="number" min="0" step="0.1" placeholder="z. B. 9,5" />
+                </label>
+              </div>
+            </div>
+
+            <div class="question-block">
+              <h3>Ist ein Batteriespeicher geplant?</h3>
+              <div class="toggle-group">
+                <label class="toggle-option"><input type="radio" name="speicherGeplant" value="ja" /> <span>Ja</span></label>
+                <label class="toggle-option"><input type="radio" name="speicherGeplant" value="nein" checked /> <span>Nein</span></label>
+              </div>
+            </div>
+
+            <div id="speicher-daten" class="conditional-panel hidden">
+              <div class="input-card">
+                <label>Falls ja, wieviel kWh sind geplant?
+                  <input id="speicherKwh" type="number" min="0" step="0.1" placeholder="z. B. 8,0" />
+                </label>
+              </div>
+            </div>
+
+            <div class="question-block">
+              <label>Eingabeplan des Hauses (PDF)
+                <input id="hausplanPdf" type="file" accept=".pdf,application/pdf" />
+              </label>
+            </div>
+
+            <label class="full-width">Notizen
               <textarea id="notizen" rows="4" placeholder="Optional"></textarea>
             </label>
+          </section>
+
+          <section class="offer-step" data-step="3">
+            <h2>Abschluss</h2>
+            <div id="rechner-zusammenfassung" class="rechner-zusammenfassung"></div>
+
+            <div class="offer-grid two-col">
+              <label>Ort, Datum
+                <input id="ortDatum" />
+              </label>
+              <label>Unterschrift (Name)
+                <input id="unterschrift" />
+              </label>
+            </div>
+
+            <label class="consent-label">
+              <input type="checkbox" id="bestaetigung" required />
+              Hiermit bestätige ich die Richtigkeit und Vollständigkeit der Angaben.
+            </label>
+
+            <div id="offer-status" class="offer-status" aria-live="polite"></div>
+
+            <button type="button" id="mail-btn" class="offer-submit-btn">Angebot anfordern</button>
+          </section>
+
+          <div class="offer-nav">
+            <button type="button" id="prev-btn" class="offer-nav-btn secondary" style="display:none;">Zurück</button>
+            <button type="button" id="next-btn" class="offer-nav-btn primary">Weiter</button>
           </div>
-
-          <div class="summary">
-            <h2>Rechner-Zusammenfassung</h2>
-            <pre id="calcSummary">Lade Daten ...</pre>
-          </div>
-
-          <label class="consent">
-            <input id="bestaetigung" type="checkbox" required />
-            <span>Hiermit bestätige ich die Richtigkeit und Vollständigkeit der Angaben.</span>
-          </label>
-
-          <button id="submitBtn" type="submit">Angebot anfordern</button>
-          <div id="status" class="status" aria-live="polite"></div>
         </form>
       </section>
-    </div>
+    </main>
 
     <script>
-      const statusBox = document.getElementById("status");
-      const submitBtn = document.getElementById("submitBtn");
-      const summaryNode = document.getElementById("calcSummary");
-      const offerForm = document.getElementById("offerForm");
-
-      function showStatus(message, success) {
-        statusBox.textContent = message;
-        statusBox.className = success ? "status success" : "status error";
-      }
-
-      function getCalculatorPayload() {
-        try {
-          const raw = localStorage.getItem("angebotRechnerPayload");
-          if (!raw) return null;
-          const parsed = JSON.parse(raw);
-          if (!parsed || typeof parsed !== "object") return null;
-          return parsed;
-        } catch {
-          return null;
+      (function () {
+        function byId(id) { return document.getElementById(id); }
+        function getStatusBox() { return byId("offer-global-status"); }
+        function showStatus(message, success) {
+          var box = getStatusBox();
+          if (!box) return;
+          box.className = success ? "offer-status success" : "offer-status error";
+          box.textContent = message;
         }
-      }
-
-      function safe(value) {
-        return value == null || value === "" ? "-" : String(value);
-      }
-
-      const calcPayload = getCalculatorPayload();
-      if (calcPayload) {
-        const lines = [];
-        lines.push(`Projektart: ${safe(calcPayload?.formData?.projektartLabel)}`);
-        lines.push(`PLZ: ${safe(calcPayload?.formData?.plz)}`);
-        lines.push(`Wohneinheiten: ${safe(calcPayload?.formData?.wohneinheiten)}`);
-        lines.push(`EH55-Status: ${safe(calcPayload?.formData?.eh55Label)}`);
-        lines.push(`Wärmeerzeuger: ${safe(calcPayload?.formData?.heaterLabel)}`);
-        lines.push(`Max. Kreditsumme: ${safe(calcPayload?.validationResult?.maxKreditsumme)}`);
-        lines.push(`KfW-Zins: ${safe(calcPayload?.zinssaetze?.kfw296)} %`);
-        lines.push(`Markt-Zins: ${safe(calcPayload?.zinssaetze?.market10yGt90)} %`);
-        lines.push(`Stand: ${safe(calcPayload?.stand)}`);
-        summaryNode.textContent = lines.join("\n");
-      } else {
-        summaryNode.textContent = "Keine Rechnerdaten gefunden. Bitte zuerst den Rechner bis Schritt 5 ausfüllen.";
-      }
-
-      function collectOfferData() {
-        return {
-          vorname: document.getElementById("vorname").value.trim(),
-          nachname: document.getElementById("nachname").value.trim(),
-          email: document.getElementById("email").value.trim(),
-          handy: document.getElementById("handy").value.trim(),
-          firma: document.getElementById("firma").value.trim(),
-          strasse: document.getElementById("strasse").value.trim(),
-          hausnummer: document.getElementById("hausnummer").value.trim(),
-          plz: document.getElementById("plz").value.trim(),
-          ort: document.getElementById("ort").value.trim(),
-          notizen: document.getElementById("notizen").value.trim(),
-        };
-      }
-
-      function isValidEmail(value) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-      }
-
-      offerForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
-
-        if (!calcPayload?.pdfPayload) {
-          showStatus("Rechnerdaten fehlen. Bitte zuerst im Rechner auf Schritt 5 gehen und erneut öffnen.", false);
-          return;
+        function clearStatus() {
+          var box = getStatusBox();
+          if (!box) return;
+          box.className = "offer-status";
+          box.textContent = "";
         }
 
-        const confirmation = document.getElementById("bestaetigung");
-        if (!confirmation.checked) {
-          showStatus("Bitte bestätigen Sie die Richtigkeit Ihrer Angaben.", false);
-          return;
+        function getStep() {
+          var value = parseInt(document.body.getAttribute("data-offer-step") || "1", 10);
+          if (isNaN(value) || value < 1) return 1;
+          if (value > 3) return 3;
+          return value;
         }
 
-        const offer = collectOfferData();
-        if (!offer.vorname || !offer.nachname || !offer.email || !offer.handy || !offer.strasse || !offer.hausnummer || !offer.plz || !offer.ort) {
-          showStatus("Bitte alle Pflichtfelder ausfüllen.", false);
-          return;
+        function setStep(step) {
+          var i;
+          var steps = document.querySelectorAll(".offer-step");
+          var progress = document.querySelectorAll(".offer-progress-step");
+          var prevBtn = byId("prev-btn");
+          var nextBtn = byId("next-btn");
+
+          document.body.setAttribute("data-offer-step", String(step));
+          clearStatus();
+
+          for (i = 0; i < steps.length; i += 1) {
+            var stepNo = parseInt(steps[i].getAttribute("data-step") || "0", 10);
+            if (stepNo === step) steps[i].classList.add("active");
+            else steps[i].classList.remove("active");
+          }
+
+          for (i = 0; i < progress.length; i += 1) {
+            var pNo = parseInt(progress[i].getAttribute("data-step") || "0", 10);
+            progress[i].classList.remove("active");
+            progress[i].classList.remove("completed");
+            if (pNo < step) progress[i].classList.add("completed");
+            if (pNo === step) progress[i].classList.add("active");
+          }
+
+          if (prevBtn) prevBtn.style.display = step === 1 ? "none" : "inline-flex";
+          if (nextBtn) nextBtn.style.display = step === 3 ? "none" : "inline-flex";
+          if (step === 3) renderInlineSummary();
         }
-        if (!isValidEmail(offer.email)) {
-          showStatus("Bitte eine gültige E-Mail-Adresse eingeben.", false);
-          return;
+
+        function escapeHtml(value) {
+          return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
         }
 
-        submitBtn.disabled = true;
-        showStatus("Anfrage wird gesendet ...", true);
+        function fieldValue(id) {
+          var field = byId(id);
+          if (!field || typeof field.value === "undefined" || field.value === null) return "";
+          return String(field.value).trim();
+        }
 
-        try {
-          const pdfFile = await window.Kfw296Pdf.createPdfFileFromPayload(calcPayload.pdfPayload, {
-            save: false,
-            fileName: "kfw296-ergebnis.pdf",
-          });
+        function checkedValue(name) {
+          var checked = document.querySelector('input[name="' + name + '"]:checked');
+          return checked ? checked.value : "";
+        }
 
-          const formData = new FormData();
-          formData.append("offer", JSON.stringify(offer));
+        function boolText(value) {
+          return value === "ja" ? "Ja" : "Nein";
+        }
+
+        function getCalculatorPayload() {
+          try {
+            var raw = window.localStorage.getItem("angebotRechnerPayload");
+            if (!raw) return null;
+            var parsed = JSON.parse(raw);
+            if (!parsed || typeof parsed !== "object") return null;
+            return parsed;
+          } catch {
+            return null;
+          }
+        }
+
+        var OFFER_PDF_SESSION_KEY = "angebotRechnerPdfDataUrl";
+        var calcPayload = getCalculatorPayload();
+
+        function dataUrlToPdfFile(dataUrl, fileName) {
+          if (!dataUrl || typeof dataUrl !== "string") return null;
+
+          var parts = dataUrl.split(",");
+          if (parts.length !== 2) return null;
+
+          var meta = parts[0];
+          var base64Data = parts[1];
+          var mimeMatch = meta.match(/data:(.*?);base64/i);
+          var mimeType = mimeMatch && mimeMatch[1] ? mimeMatch[1] : "application/pdf";
+
+          try {
+            var binary = atob(base64Data);
+            var length = binary.length;
+            var bytes = new Uint8Array(length);
+            for (var i = 0; i < length; i += 1) {
+              bytes[i] = binary.charCodeAt(i);
+            }
+            return new File([bytes], fileName, { type: mimeType });
+          } catch {
+            return null;
+          }
+        }
+
+        function getCachedCalculatorPdfFile() {
+          try {
+            var dataUrl = window.sessionStorage.getItem(OFFER_PDF_SESSION_KEY);
+            if (!dataUrl) return null;
+            return dataUrlToPdfFile(dataUrl, "kfw296-ergebnis.pdf");
+          } catch {
+            return null;
+          }
+        }
+
+        function validateStep1() {
+          var requiredIds = ["vorname", "nachname", "strasse", "hausnummer", "plz", "ort", "email", "handy"];
+          var i;
+          for (i = 0; i < requiredIds.length; i += 1) {
+            var field = byId(requiredIds[i]);
+            if (!field) continue;
+            if (!field.value || !String(field.value).trim()) {
+              field.focus();
+              showStatus("Bitte füllen Sie alle Pflichtfelder in Schritt 1 aus.", false);
+              return false;
+            }
+          }
+          var email = fieldValue("email");
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            showStatus("Bitte eine gültige E-Mail-Adresse eingeben.", false);
+            return false;
+          }
+          return true;
+        }
+
+        function validateStep2() {
+          var sameAddressYes = document.querySelector('input[name="adresseIdentisch"][value="ja"]');
+          var sameAddress = sameAddressYes && sameAddressYes.checked;
+          var i;
+
+          if (!sameAddress) {
+            var requiredAddressIds = ["investStrasse", "investHausnummer", "investPlz", "investOrt"];
+            for (i = 0; i < requiredAddressIds.length; i += 1) {
+              var addressField = byId(requiredAddressIds[i]);
+              if (!addressField || !addressField.value || !String(addressField.value).trim()) {
+                if (addressField) addressField.focus();
+                showStatus("Bitte die Investitionsadresse vollständig ausfüllen.", false);
+                return false;
+              }
+            }
+          }
+
+          var lueftungJa = document.querySelector('input[name="lueftungGeplant"][value="ja"]');
+          var isLueftungJa = lueftungJa && lueftungJa.checked;
+          if (isLueftungJa) {
+            var zentral = byId("lueftungZentral");
+            var dezentral = byId("lueftungDezentral");
+            var hasChoice = (zentral && zentral.checked) || (dezentral && dezentral.checked);
+            if (!hasChoice) {
+              showStatus("Bitte mindestens einen Lüftungstyp auswählen.", false);
+              return false;
+            }
+          }
+
+          var pvJa = document.querySelector('input[name="pvGeplant"][value="ja"]');
+          var isPvJa = pvJa && pvJa.checked;
+          if (isPvJa) {
+            var pvKwp = byId("pvKwp");
+            if (!pvKwp || !pvKwp.value || Number(pvKwp.value) <= 0) {
+              showStatus("Bitte eine gültige PV-Leistung eingeben.", false);
+              return false;
+            }
+          }
+
+          var speicherJa = document.querySelector('input[name="speicherGeplant"][value="ja"]');
+          var isSpeicherJa = speicherJa && speicherJa.checked;
+          if (isSpeicherJa) {
+            var speicherKwh = byId("speicherKwh");
+            if (!speicherKwh || !speicherKwh.value || Number(speicherKwh.value) <= 0) {
+              showStatus("Bitte eine gültige Speicherkapazität eingeben.", false);
+              return false;
+            }
+          }
+
+          return true;
+        }
+
+        function toggleConditionalPanels() {
+          var sameAddressYes = document.querySelector('input[name="adresseIdentisch"][value="ja"]');
+          var sameAddress = sameAddressYes && sameAddressYes.checked;
+          var investPanel = byId("invest-anschrift");
+          var investIds = ["investStrasse", "investHausnummer", "investPlz", "investOrt"];
+          var i;
+
+          if (investPanel) investPanel.classList.toggle("hidden", sameAddress);
+          for (i = 0; i < investIds.length; i += 1) {
+            var investField = byId(investIds[i]);
+            if (!investField) continue;
+            investField.required = !sameAddress;
+            if (sameAddress) investField.value = "";
+          }
+
+          var lueftungJa = document.querySelector('input[name="lueftungGeplant"][value="ja"]');
+          var isLueftungJa = lueftungJa && lueftungJa.checked;
+          var lueftungPanel = byId("lueftung-daten");
+          if (lueftungPanel) lueftungPanel.classList.toggle("hidden", !isLueftungJa);
+          if (!isLueftungJa) {
+            var lueftungZentral = byId("lueftungZentral");
+            var lueftungDezentral = byId("lueftungDezentral");
+            if (lueftungZentral) lueftungZentral.checked = false;
+            if (lueftungDezentral) lueftungDezentral.checked = false;
+          }
+
+          var pvJa = document.querySelector('input[name="pvGeplant"][value="ja"]');
+          var isPvJa = pvJa && pvJa.checked;
+          var pvPanel = byId("pv-daten");
+          var pvKwp = byId("pvKwp");
+          if (pvPanel) pvPanel.classList.toggle("hidden", !isPvJa);
+          if (pvKwp) {
+            pvKwp.required = !!isPvJa;
+            if (!isPvJa) pvKwp.value = "";
+          }
+
+          var speicherJa = document.querySelector('input[name="speicherGeplant"][value="ja"]');
+          var isSpeicherJa = speicherJa && speicherJa.checked;
+          var speicherPanel = byId("speicher-daten");
+          var speicherKwh = byId("speicherKwh");
+          if (speicherPanel) speicherPanel.classList.toggle("hidden", !isSpeicherJa);
+          if (speicherKwh) {
+            speicherKwh.required = !!isSpeicherJa;
+            if (!isSpeicherJa) speicherKwh.value = "";
+          }
+        }
+
+        function updateAutoEndFields() {
+          var ortInput = byId("ort");
+          var investOrtInput = byId("investOrt");
+          var vornameInput = byId("vorname");
+          var nachnameInput = byId("nachname");
+          var ortDatumInput = byId("ortDatum");
+          var unterschriftInput = byId("unterschrift");
+          var notIdentical = document.querySelector('input[name="adresseIdentisch"][value="nein"]');
+          var useInvestOrt = notIdentical && notIdentical.checked;
+
+          var kundenOrt = ortInput && ortInput.value ? String(ortInput.value).trim() : "";
+          var investOrt = investOrtInput && investOrtInput.value ? String(investOrtInput.value).trim() : "";
+          var finalOrt = useInvestOrt ? (investOrt || kundenOrt) : kundenOrt;
+          var vorname = vornameInput && vornameInput.value ? String(vornameInput.value).trim() : "";
+          var nachname = nachnameInput && nachnameInput.value ? String(nachnameInput.value).trim() : "";
+          var heute = new Date().toLocaleDateString("de-DE");
+
+          if (ortDatumInput) ortDatumInput.value = finalOrt ? finalOrt + ", " + heute : heute;
+          if (unterschriftInput) unterschriftInput.value = (vorname + " " + nachname).trim();
+        }
+
+        function renderInlineSummary() {
+          var container = byId("rechner-zusammenfassung");
+          if (!container) return;
+
+          var firma = fieldValue("firma");
+          var vorname = fieldValue("vorname");
+          var nachname = fieldValue("nachname");
+          var strasse = fieldValue("strasse");
+          var hausnummer = fieldValue("hausnummer");
+          var plz = fieldValue("plz");
+          var ort = fieldValue("ort");
+          var email = fieldValue("email");
+          var handy = fieldValue("handy");
+
+          var adresseIdentisch = checkedValue("adresseIdentisch") || "ja";
+          var investStrasse = fieldValue("investStrasse");
+          var investHausnummer = fieldValue("investHausnummer");
+          var investPlz = fieldValue("investPlz");
+          var investOrt = fieldValue("investOrt");
+
+          var lueftungGeplant = checkedValue("lueftungGeplant") || "nein";
+          var lueftungArten = [];
+          if (byId("lueftungZentral") && byId("lueftungZentral").checked) lueftungArten.push("Zentral mit Wärmerückgewinnung");
+          if (byId("lueftungDezentral") && byId("lueftungDezentral").checked) lueftungArten.push("Dezentral mit Wärmerückgewinnung");
+
+          var pvGeplant = checkedValue("pvGeplant") || "nein";
+          var pvKwp = fieldValue("pvKwp");
+          var speicherGeplant = checkedValue("speicherGeplant") || "nein";
+          var speicherKwh = fieldValue("speicherKwh");
+          var hausplanDatei = byId("hausplanPdf") && byId("hausplanPdf").files && byId("hausplanPdf").files[0]
+            ? byId("hausplanPdf").files[0].name
+            : "Nicht hochgeladen";
+
+          var rechnerDataHtml = "Keine Rechnerdaten gefunden.";
+          if (calcPayload && calcPayload.formData) {
+            rechnerDataHtml = ""
+              + "Projektart: " + escapeHtml(calcPayload.formData.projektartLabel || "-") + "<br>"
+              + "Wohneinheiten: " + escapeHtml(String(calcPayload.formData.wohneinheiten || "-")) + "<br>"
+              + "EH55-Status: " + escapeHtml(calcPayload.formData.eh55Label || "-") + "<br>"
+              + "Wärmeerzeuger: " + escapeHtml(calcPayload.formData.heaterLabel || "-") + "<br>"
+              + "Max. Kreditsumme: " + escapeHtml(String(calcPayload.validationResult?.maxKreditsumme || "-"));
+          }
+
+          var notizText = fieldValue("notizen") ? escapeHtml(fieldValue("notizen")) : "Keine Notizen";
+          var firmaHtml = firma ? "Firma: " + escapeHtml(firma) + "<br>" : "";
+          var investHtml = adresseIdentisch === "ja"
+            ? ""
+            : "Investitionsadresse: " + escapeHtml((investStrasse + " " + investHausnummer + ", " + investPlz + " " + investOrt).trim()) + "<br>";
+          var lueftungTypHtml = lueftungGeplant === "ja"
+            ? "Lüftungstyp: " + (lueftungArten.length > 0 ? escapeHtml(lueftungArten.join(", ")) : "—") + "<br>"
+            : "";
+          var pvHtml = pvGeplant === "ja" ? "PV-Leistung: " + escapeHtml(pvKwp ? pvKwp + " kWp" : "—") + "<br>" : "";
+          var speicherHtml = speicherGeplant === "ja" ? "Speicherkapazität: " + escapeHtml(speicherKwh ? speicherKwh + " kWh" : "—") + "<br>" : "";
+
+          container.innerHTML = ""
+            + '<div class="offer-summary-card">'
+            + '  <div class="summary-toggle">Zusammenfassung</div>'
+            + '  <div class="summary-content">'
+            + '    <p><strong>Antragsteller</strong><br>'
+            +          firmaHtml
+            + '      Name: ' + escapeHtml((vorname + " " + nachname).trim()) + '<br>'
+            + '      Adresse: ' + escapeHtml((strasse + " " + hausnummer + ", " + plz + " " + ort).trim()) + '<br>'
+            + '      Kontakt: ' + escapeHtml(email + " • " + handy)
+            + '    </p>'
+            + '    <p><strong>Objekt</strong><br>'
+            + '      Investitionsstandort identisch: ' + boolText(adresseIdentisch) + '<br>'
+            +          investHtml
+            + '      Lüftungsanlage geplant: ' + boolText(lueftungGeplant) + '<br>'
+            +          lueftungTypHtml
+            + '      PV-Anlage geplant: ' + boolText(pvGeplant) + '<br>'
+            +          pvHtml
+            + '      Batteriespeicher geplant: ' + boolText(speicherGeplant) + '<br>'
+            +          speicherHtml
+            + '      Eingabeplan (PDF): ' + escapeHtml(hausplanDatei)
+            + '    </p>'
+            + '    <p><strong>Rechnerdaten</strong><br>' + rechnerDataHtml + '    </p>'
+            + '    <p><strong>Notizen</strong><br>' + notizText + '</p>'
+            + '  </div>'
+            + '</div>';
+        }
+
+        function collectOfferData() {
+          var adresseIdentisch = checkedValue("adresseIdentisch") || "ja";
+          var lueftungGeplant = checkedValue("lueftungGeplant") || "nein";
+          var pvGeplant = checkedValue("pvGeplant") || "nein";
+          var speicherGeplant = checkedValue("speicherGeplant") || "nein";
+
+          return {
+            firma: fieldValue("firma"),
+            vorname: fieldValue("vorname"),
+            nachname: fieldValue("nachname"),
+            strasse: fieldValue("strasse"),
+            hausnummer: fieldValue("hausnummer"),
+            plz: fieldValue("plz"),
+            ort: fieldValue("ort"),
+            email: fieldValue("email"),
+            handy: fieldValue("handy"),
+            adresseIdentisch: adresseIdentisch,
+            investStrasse: adresseIdentisch === "ja" ? "" : fieldValue("investStrasse"),
+            investHausnummer: adresseIdentisch === "ja" ? "" : fieldValue("investHausnummer"),
+            investPlz: adresseIdentisch === "ja" ? "" : fieldValue("investPlz"),
+            investOrt: adresseIdentisch === "ja" ? "" : fieldValue("investOrt"),
+            lueftungGeplant: lueftungGeplant,
+            lueftungZentral: !!(byId("lueftungZentral") && byId("lueftungZentral").checked),
+            lueftungDezentral: !!(byId("lueftungDezentral") && byId("lueftungDezentral").checked),
+            pvGeplant: pvGeplant,
+            pvKwp: pvGeplant === "ja" ? fieldValue("pvKwp") : "",
+            speicherGeplant: speicherGeplant,
+            speicherKwh: speicherGeplant === "ja" ? fieldValue("speicherKwh") : "",
+            hausplanDatei: (byId("hausplanPdf") && byId("hausplanPdf").files && byId("hausplanPdf").files[0]) ? byId("hausplanPdf").files[0].name : "",
+            notizen: fieldValue("notizen"),
+            ortDatum: fieldValue("ortDatum"),
+            unterschrift: fieldValue("unterschrift")
+          };
+        }
+
+        function offerNextStep() {
+          var step = getStep();
+          if (step === 1 && !validateStep1()) return;
+          if (step === 2 && !validateStep2()) return;
+          if (step < 3) setStep(step + 1);
+        }
+
+        function offerPrevStep() {
+          var step = getStep();
+          if (step > 1) setStep(step - 1);
+        }
+
+        async function offerSubmit() {
+          var checkbox = byId("bestaetigung");
+          var mailBtn = byId("mail-btn");
+          if (!checkbox || !checkbox.checked) {
+            showStatus("Bitte bestätigen Sie zuerst die Richtigkeit Ihrer Angaben.", false);
+            return;
+          }
+
+          if (!validateStep1() || !validateStep2()) return;
+
+          if (!calcPayload || !calcPayload.pdfPayload) {
+            showStatus("Rechnerdaten fehlen. Bitte zuerst im Rechner auf Schritt 5 gehen und erneut öffnen.", false);
+            return;
+          }
+
+          var formData = new FormData();
+          formData.append("offer", JSON.stringify(collectOfferData()));
           formData.append("calculator", JSON.stringify(calcPayload));
+
+          var housePlanInput = byId("hausplanPdf");
+          if (housePlanInput && housePlanInput.files && housePlanInput.files[0]) {
+            formData.append("hausplanPdf", housePlanInput.files[0], housePlanInput.files[0].name);
+          }
+
+          var pdfFile = getCachedCalculatorPdfFile();
+          if (!pdfFile) {
+            try {
+              pdfFile = await window.Kfw296Pdf.createPdfFileFromPayload(calcPayload.pdfPayload, {
+                save: false,
+                fileName: "kfw296-ergebnis.pdf",
+              });
+            } catch (pdfError) {
+              showStatus("PDF konnte nicht erstellt werden. Bitte Seite neu laden und erneut versuchen.", false);
+              return;
+            }
+          }
           formData.append("rechnerPdf", pdfFile, pdfFile.name);
 
-          const response = await fetch("./api/offer-request.php", {
-            method: "POST",
-            body: formData,
-          });
-
-          let result;
           try {
-            result = await response.json();
-          } catch {
-            result = { ok: false, message: "Ungültige Serverantwort." };
-          }
+            if (mailBtn) mailBtn.disabled = true;
+            showStatus("Ihre Anfrage wird versendet ...", true);
 
-          if (!response.ok || !result.ok) {
-            throw new Error(result.message || "Versand fehlgeschlagen.");
-          }
+            var response = await fetch("./api/offer-request.php", {
+              method: "POST",
+              body: formData
+            });
 
-          offerForm.reset();
-          showStatus("Vielen Dank! Ihre Anfrage wurde gesendet. Die Bestätigung ist unterwegs.", true);
-        } catch (error) {
-          showStatus(`Versand fehlgeschlagen: ${error.message || "Unbekannter Fehler"}`, false);
-        } finally {
-          submitBtn.disabled = false;
+            var result = {};
+            try {
+              result = await response.json();
+            } catch {
+              result = { ok: false, message: "Ungültige Serverantwort." };
+            }
+
+            if (!response.ok || !result.ok) {
+              throw new Error(result.message || "Versand fehlgeschlagen.");
+            }
+
+            showStatus("Vielen Dank! Bestätigung wurde an Ihre E-Mail gesendet. Wir haben Ihre Anfrage erhalten.", true);
+          } catch (error) {
+            showStatus("Versand fehlgeschlagen: " + (error && error.message ? error.message : "Unbekannter Fehler"), false);
+          } finally {
+            if (mailBtn) mailBtn.disabled = false;
+          }
         }
-      });
+
+        byId("next-btn").addEventListener("click", offerNextStep);
+        byId("prev-btn").addEventListener("click", offerPrevStep);
+        byId("mail-btn").addEventListener("click", offerSubmit);
+
+        var watchIds = [
+          "vorname", "nachname", "strasse", "hausnummer", "plz", "ort",
+          "investStrasse", "investHausnummer", "investPlz", "investOrt",
+          "firma", "email", "handy", "pvKwp", "speicherKwh", "notizen"
+        ];
+
+        for (var i = 0; i < watchIds.length; i += 1) {
+          var field = byId(watchIds[i]);
+          if (!field) continue;
+          field.addEventListener("input", updateAutoEndFields);
+          field.addEventListener("change", updateAutoEndFields);
+          field.addEventListener("input", renderInlineSummary);
+          field.addEventListener("change", renderInlineSummary);
+        }
+
+        var radios = document.querySelectorAll('input[name="adresseIdentisch"], input[name="lueftungGeplant"], input[name="pvGeplant"], input[name="speicherGeplant"]');
+        for (var r = 0; r < radios.length; r += 1) {
+          radios[r].addEventListener("change", function () {
+            toggleConditionalPanels();
+            updateAutoEndFields();
+            renderInlineSummary();
+          });
+        }
+
+        var lueftungChecks = [byId("lueftungZentral"), byId("lueftungDezentral")];
+        for (var c = 0; c < lueftungChecks.length; c += 1) {
+          if (!lueftungChecks[c]) continue;
+          lueftungChecks[c].addEventListener("change", renderInlineSummary);
+        }
+
+        setStep(getStep());
+        toggleConditionalPanels();
+        updateAutoEndFields();
+        renderInlineSummary();
+      })();
     </script>
   </body>
 </html>

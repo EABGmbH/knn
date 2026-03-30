@@ -28,8 +28,8 @@ if (!$offer || !$calculator) {
 }
 
 $customerEmail = clean_text($offer['email'] ?? '');
-$firstName = clean_text($offer['vorname'] ?? '');
-$lastName = clean_text($offer['nachname'] ?? '');
+$firstName = clean_text($offer['nachname'] ?? '');
+$lastName = clean_text($offer['vorname'] ?? '');
 
 if ($customerEmail === '' || !filter_var($customerEmail, FILTER_VALIDATE_EMAIL) || $firstName === '' || $lastName === '') {
   http_response_code(400);
@@ -119,7 +119,7 @@ function send_mail_with_attachment($to, $subject, $body, $from, $attachmentConte
 }
 
 $subjectCustomer = 'Ihre Anfrage bei Energy Advice Bavaria';
-$subjectCompany = 'Neue Anfrage aus KfW-296 Rechner';
+$subjectCompany = 'Angebotsanfrage KfW 297/298 – ' . $lastName . ' ' . $firstName;
 
 $okCustomer = send_mail_with_attachment($customerEmail, $subjectCustomer, $plainBodyCustomer, $fromEmail, $pdfContent, $pdfName);
 $okCompany = send_mail_with_attachment($companyEmail, $subjectCompany, $plainBodyCompany, $fromEmail, $pdfContent, $pdfName);
